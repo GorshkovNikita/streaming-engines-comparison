@@ -9,25 +9,24 @@
     <version>1.0</version>
 
     <dependencies>
+
+        <!-- streaming api -->
         <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>hbc-core</artifactId>
             <version>2.2.0</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>com.twitter</groupId>-->
-        <!--<artifactId>hbc-twitter4j</artifactId>-->
-        <!--<version>2.2.0</version>-->
-        <!--</dependency>-->
+        <!-- status class -->
         <dependency>
             <groupId>org.twitter4j</groupId>
             <artifactId>twitter4j-core</artifactId>
             <version>4.0.4</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.storm</groupId>
             <artifactId>storm-core</artifactId>
-            <version>0.10.0</version>
+            <version>1.0.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -35,6 +34,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- kafka consumer for storm -->
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>storm-kafka</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_2.10</artifactId>
@@ -46,15 +52,30 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.10</artifactId>
+            <version>0.9.0.1</version>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>org.apache.spark</groupId>-->
         <!--<artifactId>spark-streaming-twitter_2.10</artifactId>-->
         <!--<version>1.6.1</version>-->
         <!--</dependency>-->
+
         <!--<dependency>-->
         <!--<groupId>com.fasterxml.jackson.core</groupId>-->
         <!--<artifactId>jackson-core</artifactId>-->
         <!--<version>2.6.3</version>-->
+        <!--</dependency>-->
+
+
+        <!--<dependency>-->
+        <!--<groupId>com.twitter</groupId>-->
+        <!--<artifactId>hbc-twitter4j</artifactId>-->
+        <!--<version>2.2.0</version>-->
         <!--</dependency>-->
 
     </dependencies>

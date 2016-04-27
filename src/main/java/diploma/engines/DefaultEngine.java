@@ -2,11 +2,9 @@ package diploma.engines;
 
 import diploma.TwitterStreamConnection;
 import diploma.processors.Processor;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
-import java.util.Arrays;
 import java.util.concurrent.*;
 
 /**

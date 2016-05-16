@@ -28,14 +28,13 @@ public class StormEngine extends AbstractEngine {
     @Override
     public void run() throws Exception {
         TopologyBuilder topologyBuilder = new TopologyBuilder();
-//        String topicName = "my-replicated-topic";
-//        BrokerHosts hosts = new ZkHosts("localhost:2181");
-//        SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
-//        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-//        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
-//        topologyBuilder.setSpout("spout", kafkaSpout);
+        String topicName = "my-replicated-topic";
+        BrokerHosts hosts = new ZkHosts("localhost:2181");
+        SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
+        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+        topologyBuilder.setSpout("spout", kafkaSpout);
 //        topologyBuilder.setSpout("spout", new TwitterSpout());
-        topologyBuilder.setSpout("spout", new StringRandomSpout());
         topologyBuilder.setBolt("bolt", new StormBolt(this.processor)).shuffleGrouping("spout");
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");

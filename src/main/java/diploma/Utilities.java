@@ -39,9 +39,4 @@ public class Utilities {
             return randomInt - 1;
         }
     }
-
-    public static void main(String a[]){
-        System.out.println(generateRandomString());
-        System.out.println(generateRandomString());
-    }
 }

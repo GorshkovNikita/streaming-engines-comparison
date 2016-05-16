@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Created by Никита on 14.12.2015.
  */
 public class Main {
-    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     private static void processStream(StreamEngineType streamEngineType) throws Exception {
         Engine engine;
@@ -36,7 +36,7 @@ public class Main {
     }
 
     public static void run(String consumerKey, String consumerSecret, String token, String secret, StreamEngineType streamEngineType) throws Exception, InterruptedException {
-        new Thread(new TwitterThread(consumerKey, consumerSecret, token, secret)).run();
+        //new Thread(new TwitterThread(consumerKey, consumerSecret, token, secret)).run();
         processStream(streamEngineType);
         //TwitterStreamConnection.getInstance().getClient().stop();
         System.out.println("The client read " + TwitterStreamConnection.getInstance().getClient().getStatsTracker().getNumMessages() + " messages!\n");

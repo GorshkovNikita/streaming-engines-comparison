@@ -38,6 +38,7 @@
                     <artifactId>log4j-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
+            <!-- В локальном режиме нужно отключать!! -->
             <!--<scope>provided</scope>-->
         </dependency>
 
@@ -78,7 +79,6 @@
         <!--<version>2.6.3</version>-->
         <!--</dependency>-->
 
-
         <!--<dependency>-->
         <!--<groupId>com.twitter</groupId>-->
         <!--<artifactId>hbc-twitter4j</artifactId>-->
@@ -110,17 +110,15 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <configuration>
-                    <mainClass>diploma.Main</mainClass>
-                    <arguments>
-                        <argument>storm</argument>
-                    </arguments>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

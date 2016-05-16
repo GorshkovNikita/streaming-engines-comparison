@@ -36,9 +36,8 @@ public class Main {
     }
 
     public static void run(String consumerKey, String consumerSecret, String token, String secret, StreamEngineType streamEngineType) throws Exception, InterruptedException {
-        //TwitterStreamConnection.getInstance(consumerKey, consumerSecret, token, secret).getClient().connect();
+        new Thread(new TwitterThread(consumerKey, consumerSecret, token, secret)).run();
         processStream(streamEngineType);
-        Thread.sleep(10000);
         //TwitterStreamConnection.getInstance().getClient().stop();
         System.out.println("The client read " + TwitterStreamConnection.getInstance().getClient().getStatsTracker().getNumMessages() + " messages!\n");
     }

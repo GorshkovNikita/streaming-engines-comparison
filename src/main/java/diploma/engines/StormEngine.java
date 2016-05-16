@@ -1,6 +1,7 @@
 package diploma.engines;
 
 import diploma.processors.Processor;
+import diploma.storm.StringRandomSpout;
 import diploma.storm.TwitterSpout;
 import org.apache.storm.*;
 import diploma.storm.StormBolt;
@@ -33,7 +34,8 @@ public class StormEngine extends AbstractEngine {
 //        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
 //        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
 //        topologyBuilder.setSpout("spout", kafkaSpout);
-        topologyBuilder.setSpout("spout", new TwitterSpout());
+//        topologyBuilder.setSpout("spout", new TwitterSpout());
+        topologyBuilder.setSpout("spout", new StringRandomSpout());
         topologyBuilder.setBolt("bolt", new StormBolt(this.processor)).shuffleGrouping("spout");
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
@@ -43,14 +45,14 @@ public class StormEngine extends AbstractEngine {
         StormTopology topology = topologyBuilder.createTopology();
 
         // start local cluster
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("test", conf, topology);
-        Utils.sleep(10000);
-        cluster.killTopology("test");
-        cluster.shutdown();
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology("test", conf, topology);
+//        Utils.sleep(10000);
+//        cluster.killTopology("test");
+//        cluster.shutdown();
 
         // submit topology on cluster
-//        conf.setNumWorkers(1);
-//        StormSubmitter.submitTopology("mytopology", conf, topology);
+        conf.setNumWorkers(1);
+        StormSubmitter.submitTopology("mytopology", conf, topology);
     }
 }

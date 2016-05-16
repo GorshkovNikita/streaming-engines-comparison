@@ -39,7 +39,7 @@
                 </exclusion>
             </exclusions>
             <!-- В локальном режиме нужно отключать!! -->
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
 
         <!-- kafka consumer for storm -->

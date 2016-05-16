@@ -22,7 +22,8 @@ public class Main {
                 engine = new DefaultEngine(new PrinterStatusProcessor());
                 break;
             case STORM:
-                engine = new StormEngine(new PrinterStringProcessor());
+//                engine = new StormEngine(new PrinterStringProcessor());
+                engine = new StormEngine(new PrinterStatusProcessor());
                 break;
             case SPARK:
                 engine = new SparkEngine(new PrinterStatusProcessor());
@@ -35,13 +36,14 @@ public class Main {
     }
 
     public static void run(String consumerKey, String consumerSecret, String token, String secret, StreamEngineType streamEngineType) throws Exception, InterruptedException {
-        //TwitterStreamConnection.getInstance(consumerKey, consumerSecret, token, secret).getClient().connect();
+        TwitterStreamConnection.getInstance(consumerKey, consumerSecret, token, secret).getClient().connect();
         processStream(streamEngineType);
-        //TwitterStreamConnection.getInstance().getClient().stop();
-        //System.out.println("The client read " + TwitterStreamConnection.getInstance().getClient().getStatsTracker().getNumMessages() + " messages!\n");
+        Thread.sleep(10000);
+        TwitterStreamConnection.getInstance().getClient().stop();
+        System.out.println("The client read " + TwitterStreamConnection.getInstance().getClient().getStatsTracker().getNumMessages() + " messages!\n");
     }
 
-    public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, AuthorizationException {
+    public static void main(String[] args) throws Exception {
         try {
             StreamEngineType streamEngineType;
             if (args.length > 0)

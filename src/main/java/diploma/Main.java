@@ -34,11 +34,7 @@ public class Main {
         }
         engine.run();
     }
-
-    public static void run(String consumerKey, String consumerSecret, String token, String secret, StreamEngineType streamEngineType) throws Exception, InterruptedException {
-        processStream(streamEngineType);
-    }
-
+    
     public static void main(String[] args) throws Exception {
         try {
             StreamEngineType streamEngineType;
@@ -46,11 +42,7 @@ public class Main {
                 streamEngineType = StreamEngineType.valueOf(args[0].toUpperCase());
             else
                 streamEngineType = StreamEngineType.NONE;
-            Main.run("YOcgp2ovL8js849lx8hbnvxcf",
-                    "IUxjGCksxWJiBlQ5PMsp5O8ksT7ZAsTDspOQafm46gSkYnII4u",
-                    "4482173056-cZrtVBDKyRoeciGNs0JaDBtaNgGEl1IHKIckeSI",
-                    "1nCVck1dtozb334vxlyca9Wb3Gq5ob7USXEX5sIqmIugs",
-                    streamEngineType);
+            processStream(streamEngineType);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

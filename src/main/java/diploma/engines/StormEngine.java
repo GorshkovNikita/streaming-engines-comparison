@@ -2,7 +2,6 @@ package diploma.engines;
 
 import diploma.processors.Processor;
 import diploma.storm.StringRandomSpout;
-import diploma.storm.TwitterSpout;
 import org.apache.storm.*;
 import diploma.storm.StormBolt;
 import org.apache.storm.generated.StormTopology;

@@ -34,7 +34,7 @@ public class Main {
         }
         engine.run();
     }
-    
+
     public static void main(String[] args) throws Exception {
         try {
             StreamEngineType streamEngineType;

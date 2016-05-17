@@ -1,6 +1,6 @@
 package diploma.engines;
 
-import diploma.TwitterStreamConnection;
+import diploma.Utilities;
 import diploma.processors.Processor;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
@@ -33,12 +33,8 @@ public class DefaultEngine extends AbstractEngine {
 
     public void process() {
         while (true) {
-            if (TwitterStreamConnection.getInstance().getClient().isDone()) {
-                System.out.println("Client connection closed unexpectedly: " + TwitterStreamConnection.getInstance().getClient().getExitEvent().getMessage());
-                break;
-            }
 
-            String msg = TwitterStreamConnection.getNextMessage();
+            String msg = Utilities.generateRandomString();
             if (msg == null) {
                 System.out.println("Did not receive a message in 1 second");
             } else {

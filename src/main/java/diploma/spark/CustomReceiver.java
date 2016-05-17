@@ -1,6 +1,5 @@
 package diploma.spark;
 
-import diploma.TwitterStreamConnection;
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.receiver.Receiver;
 
@@ -33,7 +32,7 @@ public class CustomReceiver extends Receiver<String> {
 
     public void receive() {
         while (!isStopped()) {
-            store(TwitterStreamConnection.getNextMessage());
+            //store(TwitterStreamConnection.getNextMessage());
         }
     }
 }

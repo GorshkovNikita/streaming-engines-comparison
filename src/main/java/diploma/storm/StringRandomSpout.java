@@ -1,6 +1,5 @@
 package diploma.storm;
 
-import diploma.TwitterStreamConnection;
 import diploma.Utilities;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;

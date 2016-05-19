@@ -60,6 +60,7 @@
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
+            <!--<scope>provided</scope>-->
         </dependency>
 
         <dependency>

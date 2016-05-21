@@ -31,7 +31,7 @@
                     <artifactId>log4j-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
-            <!-- В локальном режиме нужно отключать!! -->
+            <!-- В локальном режиме нужно отключать!! Даже при запуске из идеu -->
             <scope>provided</scope>
         </dependency>
 

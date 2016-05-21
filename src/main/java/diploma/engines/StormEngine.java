@@ -34,6 +34,7 @@ public class StormEngine extends AbstractEngine {
         String topicName = "my-replicated-topic";
         BrokerHosts hosts = new ZkHosts("fedora-1:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
+        spoutConfig.ignoreZkOffsets = true;
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         topologyBuilder.setSpout("spout", kafkaSpout);

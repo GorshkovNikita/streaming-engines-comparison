@@ -41,7 +41,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         topics.put("my-replicated-topic", 1);
         JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
         JavaPairReceiverInputDStream<String, String> messages =
-                KafkaUtils.createStream(ssc, "localhost:2181", "tweets-consumer", topics, StorageLevel.MEMORY_ONLY());
+                KafkaUtils.createStream(ssc, "192.168.1.21:2181", "tweets-consumer", topics, StorageLevel.MEMORY_ONLY());
 
         JavaDStream<Status> statuses = messages.map((status) -> {
             try {

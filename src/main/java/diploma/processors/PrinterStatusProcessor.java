@@ -19,7 +19,7 @@ public class PrinterStatusProcessor implements Processor<Status>, Serializable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        String text = status.getUser().getName() + " posts " + status.getText();
+        String text = /* status.getUser().getName() + */ " posts " + status.getText();
         System.out.println(text);
         LOG.info(text);
     }

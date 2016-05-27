@@ -23,9 +23,11 @@ import java.util.UUID;
  */
 public class StormEngine extends AbstractEngine {
     private static final Logger LOG = LoggerFactory.getLogger(StormEngine.class);
+    private int numWorkers;
 
-    public StormEngine(Processor processor) {
+    public StormEngine(Processor processor, int numWorkers) {
         super(processor);
+        this.numWorkers = numWorkers;
     }
 
     @Override
@@ -34,6 +36,8 @@ public class StormEngine extends AbstractEngine {
         String topicName = "my-replicated-topic";
         BrokerHosts hosts = new ZkHosts("fedora-1:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
+        // игнорируем смещение, записанное в zookeeper,
+        // чтобы при каждом новом сабмите топологии сообщения читались заново
         spoutConfig.ignoreZkOffsets = true;
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
@@ -55,7 +59,7 @@ public class StormEngine extends AbstractEngine {
 //        cluster.shutdown();
 
 //        submit topology on cluster
-        conf.setNumWorkers(1);
+        conf.setNumWorkers(numWorkers);
         StormSubmitter.submitTopology("mytopology", conf, topology);
         LOG.info("topology submitted!!!");
     }

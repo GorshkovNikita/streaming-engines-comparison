@@ -14,12 +14,12 @@ public class PrinterStatusProcessor implements Processor<Status>, Serializable {
 
     @Override
     public void process(Status status) {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        String text = /* status.getUser().getName() + */ " posts " + status.getText();
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        String text = /* status.getUser().getName() + */ "posted " + status.getText();
         System.out.println(text);
         LOG.info(text);
     }

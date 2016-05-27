@@ -15,15 +15,26 @@ import org.slf4j.LoggerFactory;
 public class Main {
     //private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    private static void processStream(StreamEngineType streamEngineType) throws Exception {
-        Engine engine;
+    private static void processStream(String[] args) throws Exception {
+        StreamEngineType streamEngineType;
+        int numWorkers;
+        Engine engine = null;
+        if (args.length > 0)
+            streamEngineType = StreamEngineType.valueOf(args[0].toUpperCase());
+        else
+            streamEngineType = StreamEngineType.NONE;
         switch (streamEngineType) {
             case NONE:
                 engine = new DefaultEngine(new PrinterStatusProcessor());
                 break;
             case STORM:
 //                engine = new StormEngine(new PrinterStringProcessor());
-                engine = new StormEngine(new PrinterStatusProcessor());
+                try { numWorkers = Integer.valueOf(args[1]); }
+                catch (NumberFormatException ex) {
+                    System.out.println(ex.getMessage());
+                    break;
+                }
+                engine = new StormEngine(new PrinterStatusProcessor(), numWorkers);
                 break;
             case SPARK:
                 engine = new SparkEngine(new PrinterStatusProcessor());
@@ -32,17 +43,13 @@ public class Main {
                 engine = new DefaultEngine(new PrinterStatusProcessor());
                 break;
         }
-        engine.run();
+        if (engine != null)
+            engine.run();
     }
 
     public static void main(String[] args) throws Exception {
         try {
-            StreamEngineType streamEngineType;
-            if (args.length > 0)
-                streamEngineType = StreamEngineType.valueOf(args[0].toUpperCase());
-            else
-                streamEngineType = StreamEngineType.NONE;
-            processStream(streamEngineType);
+            processStream(args);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

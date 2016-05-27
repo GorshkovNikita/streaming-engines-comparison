@@ -32,7 +32,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
     @Override
     public void run() throws Exception {
         SparkConf conf = new SparkConf().setAppName("twitter-test-2")
-            .setMaster("spark://fedora-1:7077");
+            .setMaster("spark://192.168.1.21:7077");
             //.setMaster("local[2]");
 //            .setJars(new String[]{
 //                    "~/diploma/streaming-comparison-engines/target/streaming-engines-comparison-1.0-jar-with-dependencies.jar"

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Created by Никита on 14.12.2015.
  */
 public class Main {
-    //private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     private static void processStream(String[] args) throws Exception {
         StreamEngineType streamEngineType;
@@ -32,6 +32,7 @@ public class Main {
                 try { numWorkers = Integer.valueOf(args[1]); }
                 catch (NumberFormatException ex) {
                     System.out.println(ex.getMessage());
+                    LOG.info(ex.getMessage());
                     break;
                 }
                 engine = new StormEngine(new PrinterStatusProcessor(), numWorkers);

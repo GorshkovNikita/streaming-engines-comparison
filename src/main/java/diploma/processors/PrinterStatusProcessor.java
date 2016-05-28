@@ -19,8 +19,8 @@ public class PrinterStatusProcessor implements Processor<Status>, Serializable {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//        for (int i = 0; i < 250000; i++)
-            LOG.info("Занимаю процессор " + 1 + "ый раз");
+        for (int i = 0; i < 250000; i++)
+            LOG.info("Занимаю процессор " + i + "ый раз");
         String text = /* status.getUser().getName() + */ "posted " + status.getText();
         LOG.info(text);
     }

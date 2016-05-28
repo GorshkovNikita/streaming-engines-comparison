@@ -43,7 +43,7 @@ public class StormEngine extends AbstractEngine {
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new StringRandomSpout());
-        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 2).shuffleGrouping("spout");
+        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 6).shuffleGrouping("spout");
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();

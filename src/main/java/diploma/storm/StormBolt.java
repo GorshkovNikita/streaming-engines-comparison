@@ -30,7 +30,7 @@ public class StormBolt extends BaseBasicBolt {
             LOG.info("Нахожусь в execute");
             LOG.info(processor.getClass().getTypeName());
             try {
-                Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("status"));
+                Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
                 LOG.info("Со статусом то все нормально = " + status.getText());
                 processor.process(status);
                 LOG.info("А сюда я видимо не попаду");

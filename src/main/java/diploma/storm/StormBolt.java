@@ -6,12 +6,15 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import twitter4j.TwitterObjectFactory;
 
 /**
  * Created by Никита on 05.04.2016.
  */
 public class StormBolt extends BaseBasicBolt {
+    private static final Logger LOG = LoggerFactory.getLogger(StormBolt.class);
     private Processor processor;
 
     public StormBolt(Processor processor) {
@@ -22,6 +25,7 @@ public class StormBolt extends BaseBasicBolt {
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         try {
             //processor.process(tuple.getStringByField("status"));
+            LOG.info("Нахожусь в execute");
             processor.process(TwitterObjectFactory.createStatus(tuple.getStringByField("status")));
             collector.emit(tuple.getValues());
         }

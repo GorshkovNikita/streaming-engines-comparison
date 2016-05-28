@@ -31,8 +31,11 @@ public class Main {
 //                engine = new StormEngine(new PrinterStringProcessor());
                 try { numWorkers = Integer.valueOf(args[1]); }
                 catch (NumberFormatException ex) {
-                    System.out.println(ex.getMessage());
-                    LOG.info(ex.getMessage());
+                    LOG.info("Неверный формат ввода числа");
+                    break;
+                }
+                catch (Exception ex) {
+                    LOG.info("Параметр количества воркеров отсутствует");
                     break;
                 }
                 engine = new StormEngine(new PrinterStatusProcessor(), numWorkers);

@@ -31,13 +31,17 @@ public class StormBolt extends BaseBasicBolt {
             LOG.info(processor.getClass().getTypeName());
             try {
                 Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("status"));
+                LOG.info("Со статусом то все нормально = " + status.getText());
                 processor.process(status);
+                LOG.info("А сюда я видимо не попаду");
             }
             catch (TwitterException e) {
                 LOG.info("Ignored status");
             }
             catch (Exception e) {
                 LOG.info("Something went wrong in execute");
+                LOG.info(e.getMessage());
+                LOG.info(e.getClass().getTypeName());
             }
             collector.emit(tuple.getValues());
         }

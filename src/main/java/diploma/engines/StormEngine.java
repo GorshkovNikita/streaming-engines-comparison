@@ -34,7 +34,7 @@ public class StormEngine extends AbstractEngine {
     public void run() throws Exception {
         TopologyBuilder topologyBuilder = new TopologyBuilder();
         String topicName = "my-replicated-topic";
-        BrokerHosts hosts = new ZkHosts("fedora-1:2181");
+        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново

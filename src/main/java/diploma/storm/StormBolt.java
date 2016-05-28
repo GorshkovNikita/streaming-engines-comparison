@@ -8,6 +8,8 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import twitter4j.Status;
+import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
 /**
@@ -27,7 +29,16 @@ public class StormBolt extends BaseBasicBolt {
             //processor.process(tuple.getStringByField("status"));
             LOG.info("Нахожусь в execute");
             LOG.info(processor.getClass().getTypeName());
-            processor.process(TwitterObjectFactory.createStatus(tuple.getStringByField("status")));
+            try {
+                Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("status"));
+                processor.process(status);
+            }
+            catch (TwitterException e) {
+                LOG.info("Ignored status");
+            }
+            catch (Exception e) {
+                LOG.info("Something went wrong in execute");
+            }
             collector.emit(tuple.getValues());
         }
         catch (Exception ex) {//TwitterException ex) {

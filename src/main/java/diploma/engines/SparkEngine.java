@@ -43,6 +43,14 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
 
+        /*
+            Входящий поток делится на части по времени Duration
+            При одном ядре и numPartitions == 2 обработка будет происходить следующим образом:
+            Если предположить, что поток делится таким образом, что в каждой RDD находится 4 элемента,
+            то сначала будут обработаны (выведены на экран) 2 элемента, которые были назначены одному потоку,
+            а потом 2 элемента, назначенные второму потоку. Далее будет происходить тоже самое для
+            следующей RDD и тд.
+        */
         JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)

@@ -40,7 +40,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
 
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(10));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -61,19 +61,24 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 KafkaUtils.createDirectStream(ssc, String.class, String.class, StringDecoder.class, StringDecoder.class,
                         kafkaParams, topics);
 
-        JavaDStream<Status> statuses = messages.repartition(4).map((status) -> {
+        // Распараллеливаем наши RDD на 4 потока
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(4);
+
+        // Получаем статусы из сообщений
+        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
-            }
-            catch (TwitterException ex) {
+            } catch (TwitterException ex) {
                 return null;
             }
         });
 
+        // Фильтруем статусы, убирая null-объекты
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-        filteredStatuses = filteredStatuses.repartition(2);
+//        filteredStatuses = filteredStatuses.repartition(2);
 
+        // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
         filteredStatuses.foreachRDD((rdd) -> {
             System.out.println("Количество объектов в RDD-шке = " + rdd.count());

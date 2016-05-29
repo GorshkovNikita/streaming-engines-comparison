@@ -20,9 +20,8 @@ public class PrinterStatusProcessor implements Processor<Status>, Serializable {
 //            e.printStackTrace();
 //        }
         for (int i = 0; i < 10000; i++)
-            System.out.print(String.valueOf(i) + ' ');
+            LOG.info(String.valueOf(i));
         String text = /* status.getUser().getName() + */ "posted " + status.getText();
         System.out.println(text);
-        LOG.info(text);
     }
 }

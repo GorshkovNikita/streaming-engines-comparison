@@ -58,7 +58,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         Map<String, String> kafkaParams = new HashMap<>();
         kafkaParams.put("group.id", "spark-consumer");
         kafkaParams.put("auto.offset.reset", "smallest");
-        kafkaParams.put("zookeeper.connect", "192.168.1.21:2181");
+        //kafkaParams.put("zookeeper.connect", "192.168.1.21:2181");
         kafkaParams.put("metadata.broker.list", "192.168.1.26:9092,192.168.1.23:9092");
 
         JavaPairInputDStream<String, String> messages =

@@ -39,10 +39,6 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
-            //.setMaster("local[2]");
-//            .setJars(new String[]{
-//                    "~/diploma/streaming-comparison-engines/target/streaming-engines-comparison-1.0-jar-with-dependencies.jar"
-//            });
 
         JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
@@ -65,8 +61,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 KafkaUtils.createDirectStream(ssc, String.class, String.class, StringDecoder.class, StringDecoder.class,
                         kafkaParams, topics);
 
-
-        JavaDStream<Status> statuses = messages.map((status) -> {
+        JavaDStream<Status> statuses = messages.repartition(4).map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
             }

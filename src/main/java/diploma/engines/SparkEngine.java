@@ -43,7 +43,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
 
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(100));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();

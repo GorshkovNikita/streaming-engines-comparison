@@ -9,6 +9,8 @@ import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka.KafkaUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 import scala.collection.DefaultMap;
 import twitter4j.Status;
@@ -26,6 +28,7 @@ import java.util.Set;
  * Created by Никита on 06.04.2016.
  */
 public class SparkEngine extends AbstractEngine implements Serializable {
+    private static final Logger LOG = LoggerFactory.getLogger(SparkEngine.class);
     public SparkEngine() {
         super();
     }
@@ -40,7 +43,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
 
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(10));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(100));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -62,7 +65,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(4);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
@@ -81,7 +84,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
         filteredStatuses.foreachRDD((rdd) -> {
-            System.out.println("Количество объектов в RDD-шке = " + rdd.count());
+            LOG.info("Количество объектов в RDD-шке = " + rdd.count());
             rdd.foreach(processor::process);
         });
 

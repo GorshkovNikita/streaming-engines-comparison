@@ -31,8 +31,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
     @Override
     public void run() throws Exception {
-        SparkConf conf = new SparkConf().
-                setAppName("twitter-test")
+        SparkConf conf = new SparkConf()
+                .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
             //.setMaster("local[2]");
 //            .setJars(new String[]{

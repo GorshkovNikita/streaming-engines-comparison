@@ -22,6 +22,7 @@ public class PrinterStatusProcessor implements Processor<Status>, Serializable {
         for (int i = 0; i < 250000; i++)
             LOG.info("Занимаю процессор " + i + "ый раз");
         String text = /* status.getUser().getName() + */ "posted " + status.getText();
+        System.out.println(text);
         LOG.info(text);
     }
 }

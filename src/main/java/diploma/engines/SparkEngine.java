@@ -65,6 +65,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 KafkaUtils.createDirectStream(ssc, String.class, String.class, StringDecoder.class, StringDecoder.class,
                         kafkaParams, topics);
 
+
         JavaDStream<Status> statuses = messages.map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
@@ -75,6 +76,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         });
 
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
+
+        filteredStatuses = filteredStatuses.repartition(2);
 
         // processor::process equivalent to (status) -> processor.process(status)
         filteredStatuses.foreachRDD((rdd) -> {

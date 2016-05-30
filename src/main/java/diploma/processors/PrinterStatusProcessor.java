@@ -14,9 +14,7 @@ public class PrinterStatusProcessor implements Processor<Void, Status>, Serializ
 
     @Override
     public Void process(Status status) {
-        for (int i = 0; i < 10000; i++)
-            LOG.info(String.valueOf(i));
-        String text = /* status.getUser().getName() + */ "posted " + status.getText();
+        String text = status.getUser().getName() + "posted " + status.getText();
         System.out.println(text);
         return null;
     }

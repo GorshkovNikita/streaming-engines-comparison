@@ -54,9 +54,9 @@ public class StormEngine extends AbstractEngine {
 //        topologyBuilder.setSpout("spout", new StringRandomSpout());
         topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 2)
                 .shuffleGrouping("spout");
-        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 4)
+        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
                 .shuffleGrouping("bolt");
-        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 4)
+        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
                 .shuffleGrouping("ngram-detection-bolt");
 
         // TODO: сделать нормальное создание цепочки обработчиков

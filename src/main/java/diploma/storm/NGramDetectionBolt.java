@@ -20,7 +20,7 @@ public class NGramDetectionBolt extends AbstractBasicBolt {
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        List<String> ngrams = (List<String>) processor.process(input.getValueByField("status"));
+        List<String> ngrams = (List<String>) processor.process(input.getValueByField("statusText"));
         for (String ngram : ngrams)
             collector.emit(new ArrayList<Object>() {{ add(ngram); }});
     }

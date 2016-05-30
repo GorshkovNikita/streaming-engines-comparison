@@ -12,6 +12,9 @@ import twitter4j.Status;
 import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Никита on 05.04.2016.
  */
@@ -29,7 +32,7 @@ public class StormBolt extends AbstractBasicBolt {
             Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
             processor.process(status);
             // отправляем твиты дальше по топологии
-            collector.emit(tuple.getValues());
+            collector.emit(new ArrayList<Object>(){{ add(status.getText());}});
         }
         catch (TwitterException e) {
             LOG.info("Ignored status");
@@ -38,6 +41,6 @@ public class StormBolt extends AbstractBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer ofd) {
-        ofd.declare(new Fields("status"));
+        ofd.declare(new Fields("statusText"));
     }
 }

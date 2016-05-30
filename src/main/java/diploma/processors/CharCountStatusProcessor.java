@@ -7,9 +7,11 @@ import java.io.Serializable;
 /**
  * Created by Никита on 05.04.2016.
  */
-public class CharCountStatusProcessor implements Processor<Status>, Serializable {
+public class CharCountStatusProcessor implements Processor<Integer, Status>, Serializable {
     @Override
-    public void process(Status status) {
-        System.out.println("tweet " + status.getText() + " has " + status.getText().length() + " characters");
+    public Integer process(Status status) {
+        Integer numChars = status.getText().length();
+        System.out.println("tweet " + status.getText() + " has " + numChars + " characters");
+        return numChars;
     }
 }

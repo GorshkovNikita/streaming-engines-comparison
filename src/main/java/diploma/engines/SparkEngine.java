@@ -39,6 +39,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
     @Override
     public void run() throws Exception {
+        // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 .setMaster("spark://192.168.1.21:7077");
@@ -51,6 +52,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
             а потом 2 элемента, назначенные второму потоку. Далее будет происходить тоже самое для
             следующей RDD и тд.
         */
+
+        // Создаем главную точку входа движка Spark Streaming
         JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
@@ -59,17 +62,25 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //        JavaPairReceiverInputDStream<String, String> messages =
 //                KafkaUtils.createStream(ssc, "192.168.1.21:2181", "tweets-consumer", topics, StorageLevel.MEMORY_ONLY());
 
+        // Множество строк, соответствующим темам в Kafka, из которых берутся данные
         Set<String> topics = new HashSet<>();
         topics.add("my-replicated-topic");
 
+        // Настраиваем Kafka consumer
         Map<String, String> kafkaParams = new HashMap<>();
+        // id группы потребителей
         kafkaParams.put("group.id", "spark-consumer");
+        // при каждом запуске приложения сообщения из Kafka читать заново
         kafkaParams.put("auto.offset.reset", "smallest");
         //kafkaParams.put("zookeeper.connect", "192.168.1.21:2181");
+        // список брокеров Kafka
         kafkaParams.put("metadata.broker.list", "192.168.1.26:9092,192.168.1.23:9092");
 
+        // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =
-                KafkaUtils.createDirectStream(ssc, String.class, String.class, StringDecoder.class, StringDecoder.class,
+                KafkaUtils.createDirectStream(ssc,
+                        String.class, String.class, // типы пары ключ - значение данных из Kafka
+                        StringDecoder.class, StringDecoder.class, // классы десериализаторов
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока

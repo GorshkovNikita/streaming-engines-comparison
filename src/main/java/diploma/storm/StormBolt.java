@@ -15,39 +15,23 @@ import twitter4j.TwitterObjectFactory;
 /**
  * Created by Никита on 05.04.2016.
  */
-public class StormBolt extends BaseBasicBolt {
+public class StormBolt extends AbstractBasicBolt {
     private static final Logger LOG = LoggerFactory.getLogger(StormBolt.class);
-    private Processor processor;
 
     public StormBolt(Processor processor) {
-        this.processor = processor;
+        super(processor);
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         try {
-            //processor.process(tuple.getStringByField("status"));
-            LOG.info("Нахожусь в execute");
-            LOG.info(processor.getClass().getTypeName());
-            try {
-                Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
-                LOG.info("Со статусом то все нормально = " + status.getText());
-                processor.process(status);
-                LOG.info("А сюда я видимо не попаду");
-            }
-            catch (TwitterException e) {
-                LOG.info("Ignored status");
-            }
-            catch (Exception e) {
-                LOG.info("Something went wrong in execute");
-                LOG.info(e.getMessage());
-                LOG.info(e.getClass().getTypeName());
-            }
+            Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
+            processor.process(status);
+            // отправляем твиты дальше по топологии
             collector.emit(tuple.getValues());
         }
-        catch (Exception ex) {//TwitterException ex) {
-            // cannot parse json while process it in bolt
-            //System.out.println("cannot parse json while process it in bolt");
+        catch (TwitterException e) {
+            LOG.info("Ignored status");
         }
     }
 

@@ -9,19 +9,15 @@ import java.io.Serializable;
 /**
  * Created by Никита on 03.04.2016.
  */
-public class PrinterStatusProcessor implements Processor<Status>, Serializable {
+public class PrinterStatusProcessor implements Processor<Void, Status>, Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(PrinterStatusProcessor.class);
 
     @Override
-    public void process(Status status) {
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+    public Void process(Status status) {
         for (int i = 0; i < 10000; i++)
             LOG.info(String.valueOf(i));
         String text = /* status.getUser().getName() + */ "posted " + status.getText();
         System.out.println(text);
+        return null;
     }
 }

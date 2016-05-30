@@ -1,13 +1,12 @@
 package diploma.processors;
 
-import java.io.Serializable;
-
 /**
- * Created by Никита on 21.04.2016.
+ * Created by Никита on 30.05.2016.
  */
-public class PrinterStringProcessor implements Processor<String>, Serializable {
+public class PrinterStringProcessor implements Processor<Void, String> {
     @Override
-    public void process(String string) {
+    public Void process(String string) {
         System.out.println(string);
+        return null;
     }
 }

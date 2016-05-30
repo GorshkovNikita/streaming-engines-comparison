@@ -1,6 +1,10 @@
 package diploma.engines;
 
+import diploma.processors.NGramsProcessor;
+import diploma.processors.PrinterStringProcessor;
 import diploma.processors.Processor;
+import diploma.storm.NGramDetectionBolt;
+import diploma.storm.NGramPrinterBolt;
 import diploma.storm.StringRandomSpout;
 import org.apache.storm.*;
 import diploma.storm.StormBolt;
@@ -25,6 +29,7 @@ public class StormEngine extends AbstractEngine {
     private static final Logger LOG = LoggerFactory.getLogger(StormEngine.class);
     private int numWorkers;
 
+    // TODO: такой подход не работает при количестве обработчиков больше одного
     public StormEngine(Processor processor, int numWorkers) {
         super(processor);
         this.numWorkers = numWorkers;
@@ -33,17 +38,27 @@ public class StormEngine extends AbstractEngine {
     @Override
     public void run() throws Exception {
         TopologyBuilder topologyBuilder = new TopologyBuilder();
+        // Указываем название темы Kafka, из которой берутся данные
         String topicName = "my-replicated-topic";
+        // Указываем ip и порт zookeeper-сервера
         BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново
         spoutConfig.ignoreZkOffsets = true;
+        // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+        // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new StringRandomSpout());
-        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 6).shuffleGrouping("spout");
+        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 2)
+                .shuffleGrouping("spout");
+        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 4)
+                .shuffleGrouping("bolt");
+        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 4)
+                .shuffleGrouping("ngram-detection-bolt");
+
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();

@@ -23,6 +23,6 @@ public class NGramPrinterBolt extends AbstractBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("ngram", "msgid"));
+        declarer.declare(new Fields("ngram"));
     }
 }

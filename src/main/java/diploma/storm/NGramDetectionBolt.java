@@ -22,11 +22,11 @@ public class NGramDetectionBolt extends AbstractBasicBolt {
     public void execute(Tuple input, BasicOutputCollector collector) {
         List<String> ngrams = (List<String>) processor.process(input.getValueByField("status"));
         for (String ngram : ngrams)
-            collector.emit(new ArrayList<Object>() {{ add(ngram); add(input.getMessageId()); }});
+            collector.emit(new ArrayList<Object>() {{ add(ngram); }});
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("ngram", "msgid"));
+        declarer.declare(new Fields("ngram"));
     }
 }

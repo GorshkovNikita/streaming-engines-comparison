@@ -25,6 +25,7 @@ public class StormBolt extends AbstractBasicBolt {
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         try {
+            // Имя поля обозначено в классе StringScheme
             Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
             processor.process(status);
             // отправляем твиты дальше по топологии
@@ -37,6 +38,6 @@ public class StormBolt extends AbstractBasicBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer ofd) {
-        ofd.declare(new Fields("status", "msgid"));
+        ofd.declare(new Fields("status"));
     }
 }

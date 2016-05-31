@@ -107,8 +107,13 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
-                (status) -> (List<String>) nGramsProcessor.process(status.getText())
+        JavaDStream<String> ngrams = filteredStatuses.map(
+                (status) -> {
+                    long start = System.nanoTime();
+                    List<String> list = (List<String>) nGramsProcessor.process(status.getText());
+                    long elapsedTime = System.nanoTime() - start;
+                    return "Current time: " + System.nanoTime() / 1000 + " Поиск ngram занял: " + elapsedTime / 1000 + "microseconds";
+                }
         );
 
         ngrams.foreachRDD((rdd) -> {

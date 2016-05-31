@@ -30,7 +30,7 @@ public class StormBolt extends AbstractBasicBolt {
         try {
             // Имя поля обозначено в классе StringScheme
             Status status = TwitterObjectFactory.createStatus(tuple.getStringByField("str"));
-            processor.process(status);
+            // processor.process(status);
             // отправляем твиты дальше по топологии
             collector.emit(new ArrayList<Object>(){{ add(status.getText());}});
         }

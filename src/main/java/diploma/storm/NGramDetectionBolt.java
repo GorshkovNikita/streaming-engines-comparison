@@ -25,7 +25,7 @@ public class NGramDetectionBolt extends AbstractBasicBolt {
         for (String ngram : ngrams)
             collector.emit(new ArrayList<Object>() {{ add(ngram); }});
         long elapsedTime = System.nanoTime() - start;
-        System.out.println("Поиск ngram занял " + elapsedTime / 1000000 + "ms");
+        //System.out.println("Поиск ngram занял " + elapsedTime / 1000 + "microseconds");
     }
 
     @Override

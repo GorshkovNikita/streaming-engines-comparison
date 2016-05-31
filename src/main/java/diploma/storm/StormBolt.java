@@ -35,7 +35,7 @@ public class StormBolt extends AbstractBasicBolt {
             collector.emit(new ArrayList<Object>(){{ add(status.getText());}});
         }
         catch (TwitterException e) {
-            LOG.info("Ignored status");
+            //LOG.info("Ignored status");
         }
     }
 

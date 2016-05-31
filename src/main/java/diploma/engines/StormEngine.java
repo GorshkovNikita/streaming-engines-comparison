@@ -53,15 +53,15 @@ public class StormEngine extends AbstractEngine {
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new StringRandomSpout());
-        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 2)
+        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 1)
                 .shuffleGrouping("spout");
-        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
+        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 1)
                 .shuffleGrouping("bolt");
         topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
                 .withWindow(
                         new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),
-                        new BaseWindowedBolt.Duration(40, TimeUnit.MILLISECONDS))
-                , 2).shuffleGrouping("ngram-detection-bolt");
+                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS))
+                , 1).shuffleGrouping("ngram-detection-bolt");
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("ngram-detection-bolt");
 

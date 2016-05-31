@@ -33,9 +33,10 @@ public class NGramsCountWindowBolt extends BaseWindowedBolt {
             else
                 ngrams.put(ngram, 1);
         }
-        System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        for (Map.Entry<String, Integer> ngram : ngrams.entrySet())
-            System.out.println(ngram.getKey() + " = " + ngram.getValue());
+        System.out.println("НОВОЕ ОКНО = " + ngrams.size());
+        //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
+        //for (Map.Entry<String, Integer> ngram : ngrams.entrySet())
+            //System.out.println(ngram.getKey() + " = " + ngram.getValue());
             //collector.emit(new ArrayList<Object>() {{ add(ngram.getKey()); add(ngram.getValue()); }});
     }
 

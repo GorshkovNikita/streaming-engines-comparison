@@ -107,7 +107,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap((status) -> (List<String>) nGramsProcessor.process(status));
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+                (status) -> (List<String>) nGramsProcessor.process(status.getText())
+        );
 
         ngrams.foreachRDD((rdd) -> {
             rdd.foreach(processor::process);

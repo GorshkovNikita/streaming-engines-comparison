@@ -6,8 +6,10 @@ import diploma.processors.Processor;
 import diploma.spark.CustomReceiver;
 import kafka.serializer.StringDecoder;
 import org.apache.spark.*;
+import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.network.protocol.Encoders;
 import org.apache.spark.storage.StorageLevel;
+import org.apache.spark.streaming.Duration;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka.KafkaUtils;
@@ -107,17 +109,20 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.map(
-                (status) -> {
-                    long start = System.nanoTime();
-                    List<String> list = (List<String>) nGramsProcessor.process(status.getText());
-                    long elapsedTime = System.nanoTime() - start;
-                    return "Current time: " + System.nanoTime() / 1000 + " Поиск ngram занял: " + elapsedTime / 1000 + "microseconds";
-                }
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+                (status) -> (List<String>) nGramsProcessor.process(status.getText())
         );
 
-        ngrams.foreachRDD((rdd) -> {
-            rdd.foreach(processor::process);
+        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+
+        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
+                + value2, Durations.milliseconds(60), Durations.milliseconds(50));
+
+        System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
+        reducedMapNgrams.foreachRDD((rdd) -> {
+            rdd.foreach((pair) -> {
+                System.out.println(pair._1() + " = " + pair._2());
+            });
         });
 
         ssc.start();

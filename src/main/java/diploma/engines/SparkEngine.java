@@ -40,7 +40,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
     @Override
     public void run() throws Exception {
-        Processor nGramsProcessor = new NGramsProcessor();
+        NGramsProcessor nGramsProcessor = new NGramsProcessor();
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
@@ -110,13 +110,13 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //        });
 
         JavaDStream<String> ngrams = filteredStatuses.flatMap(
-                (status) -> (List<String>) nGramsProcessor.process(status.getText())
+                (status) -> nGramsProcessor.process(status.getText())
         );
 
         JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
-                + value2, Durations.milliseconds(60), Durations.milliseconds(50));
+                + value2, Durations.milliseconds(50), Durations.milliseconds(40));
 
         System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         reducedMapNgrams.foreachRDD((rdd) -> {

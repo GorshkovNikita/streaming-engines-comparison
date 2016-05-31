@@ -120,8 +120,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         reducedMapNgrams.foreachRDD((rdd) -> {
-            System.out.println("Number of elements in RDD = " + rdd.count());
+            long num = rdd.count();
             rdd.foreach((pair) -> {
+                System.out.println("Count of elements in this rdd = " + num);
                 System.out.println(pair._1() + " = " + pair._2());
             });
         });

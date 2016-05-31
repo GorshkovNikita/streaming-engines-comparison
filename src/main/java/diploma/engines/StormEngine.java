@@ -59,9 +59,9 @@ public class StormEngine extends AbstractEngine {
                 .shuffleGrouping("bolt");
         topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
                 .withWindow(
-                        new BaseWindowedBolt.Duration(1, TimeUnit.MILLISECONDS),
-                        new BaseWindowedBolt.Duration(1, TimeUnit.MILLISECONDS))
-                , 2);
+                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS),
+                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS))
+                , 2).shuffleGrouping("ngram-detection-bolt");
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("ngram-detection-bolt");
 

@@ -56,7 +56,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(10));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -116,10 +116,11 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
-                + value2, Durations.milliseconds(50), Durations.milliseconds(40));
+                + value2, Durations.milliseconds(5), Durations.milliseconds(6));
 
+        System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         reducedMapNgrams.foreachRDD((rdd) -> {
-            System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
+            System.out.println("Number of elements in RDD = " + rdd.count());
             rdd.foreach((pair) -> {
                 System.out.println(pair._1() + " = " + pair._2());
             });

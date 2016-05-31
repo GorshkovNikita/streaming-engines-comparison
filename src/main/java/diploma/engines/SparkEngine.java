@@ -1,5 +1,7 @@
 package diploma.engines;
 
+import diploma.nlp.NGrams;
+import diploma.processors.NGramsProcessor;
 import diploma.processors.Processor;
 import diploma.spark.CustomReceiver;
 import kafka.serializer.StringDecoder;
@@ -19,10 +21,7 @@ import twitter4j.TwitterObjectFactory;
 
 import javax.swing.event.InternalFrameEvent;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Никита on 06.04.2016.
@@ -39,6 +38,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
     @Override
     public void run() throws Exception {
+        Processor nGramsProcessor = new NGramsProcessor();
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
@@ -102,8 +102,14 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
-        filteredStatuses.foreachRDD((rdd) -> {
-            LOG.info("Количество объектов в RDD-шке = " + rdd.count());
+//        filteredStatuses.foreachRDD((rdd) -> {
+//            LOG.info("Количество объектов в RDD-шке = " + rdd.count());
+//            rdd.foreach(processor::process);
+//        });
+
+        JavaDStream<String> ngrams = filteredStatuses.flatMap((status) -> (List<String>) nGramsProcessor.process(status));
+
+        ngrams.foreachRDD((rdd) -> {
             rdd.foreach(processor::process);
         });
 

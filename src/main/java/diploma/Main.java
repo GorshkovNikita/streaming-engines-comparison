@@ -2,6 +2,7 @@ package diploma;
 
 import diploma.engines.*;
 import diploma.processors.PrinterStatusProcessor;
+import diploma.processors.PrinterStringProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ public class Main {
                 engine = new StormEngine(new PrinterStatusProcessor(), numWorkers);
                 break;
             case SPARK:
-                engine = new SparkEngine(new PrinterStatusProcessor());
+                engine = new SparkEngine(new PrinterStringProcessor());
                 break;
             default:
                 engine = new DefaultEngine(new PrinterStatusProcessor());

@@ -3,16 +3,16 @@ package diploma.engines;
 import diploma.processors.NGramsProcessor;
 import diploma.processors.PrinterStringProcessor;
 import diploma.processors.Processor;
-import diploma.storm.NGramDetectionBolt;
-import diploma.storm.NGramPrinterBolt;
-import diploma.storm.StringRandomSpout;
+import diploma.storm.*;
+import org.apache.spark.streaming.Durations;
 import org.apache.storm.*;
-import diploma.storm.StormBolt;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.*;
 import org.apache.storm.kafka.trident.GlobalPartitionInformation;
+import org.apache.storm.shade.org.joda.time.Duration;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Никита on 03.04.2016.
@@ -56,6 +57,11 @@ public class StormEngine extends AbstractEngine {
                 .shuffleGrouping("spout");
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
                 .shuffleGrouping("bolt");
+        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+                .withWindow(
+                        new BaseWindowedBolt.Duration(1, TimeUnit.MILLISECONDS),
+                        new BaseWindowedBolt.Duration(1, TimeUnit.MILLISECONDS))
+                , 2);
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("ngram-detection-bolt");
 

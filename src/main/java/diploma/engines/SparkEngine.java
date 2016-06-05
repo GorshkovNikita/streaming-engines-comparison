@@ -44,7 +44,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .setMaster("spark://192.168.1.21:7077");
+                .setMaster("spark://172.31.22.231:7077");
 
         /*
             Входящий поток делится на части по времени Duration
@@ -56,7 +56,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(1));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(100));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -74,9 +74,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         kafkaParams.put("group.id", "spark-consumer");
         // при каждом запуске приложения сообщения из Kafka читать заново
         kafkaParams.put("auto.offset.reset", "smallest");
-        //kafkaParams.put("zookeeper.connect", "192.168.1.21:2181");
+        //kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
-        kafkaParams.put("metadata.broker.list", "192.168.1.26:9092,192.168.1.23:9092");
+        kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
 
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =
@@ -86,7 +86,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
@@ -116,13 +116,13 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
-                + value2, Durations.milliseconds(5), Durations.milliseconds(6));
+                + value2, Durations.milliseconds(500), Durations.milliseconds(600));
 
         System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         reducedMapNgrams.foreachRDD((rdd) -> {
             long num = rdd.count();
             rdd.foreach((pair) -> {
-                System.out.println("Count of elements in this rdd = " + num);
+                //System.out.println("Count of elements in this rdd = " + num);
                 System.out.println(pair._1() + " = " + pair._2());
             });
         });

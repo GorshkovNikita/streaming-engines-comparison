@@ -42,7 +42,7 @@ public class StormEngine extends AbstractEngine {
         // Указываем название темы Kafka, из которой берутся данные
         String topicName = "my-replicated-topic";
         // Указываем ip и порт zookeeper-сервера
-        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
+        BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново

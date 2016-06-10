@@ -44,7 +44,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .setMaster("spark://172.31.22.231:7077");
+                .setMaster("spark://172.31.22.231:7077")
+                .set("spark.streaming.kafka.maxRatePerPartition", "1");
 
         /*
             Входящий поток делится на части по времени Duration
@@ -56,7 +57,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.milliseconds(100));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -118,7 +119,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
                 + value2, Durations.milliseconds(500), Durations.milliseconds(600));
 
-        System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
+        //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         reducedMapNgrams.foreachRDD((rdd) -> {
             long num = rdd.count();
             rdd.foreach((pair) -> {

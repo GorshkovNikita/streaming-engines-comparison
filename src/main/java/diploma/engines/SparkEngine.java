@@ -44,8 +44,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .setMaster("spark://172.31.22.231:7077")
-                .set("spark.streaming.kafka.maxRatePerPartition", "1");
+                //.setMaster("spark://172.31.22.231:7077")
+                .set("spark.streaming.kafka.maxRatePerPartition", "8")
+                ;
 
         /*
             Входящий поток делится на части по времени Duration
@@ -77,7 +78,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         kafkaParams.put("auto.offset.reset", "smallest");
         //kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
-        kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
+        //kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
+        kafkaParams.put("metadata.broker.list", "192.168.1.23:9092");
 
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =
@@ -87,7 +89,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
@@ -110,21 +112,22 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
-                (status) -> nGramsProcessor.process(status.getText())
-        );
+        //JavaDStream<String> ngrams = filteredStatuses.flatMap(
+        //        (status) -> nGramsProcessor.process(status.getText())
+        //);
 
-        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+        //JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
-        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
-                + value2, Durations.milliseconds(500), Durations.milliseconds(600));
+        //JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
+        //        + value2, Durations.milliseconds(1000), Durations.milliseconds(1000));
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        reducedMapNgrams.foreachRDD((rdd) -> {
+        //reducedMapNgrams
+        filteredStatuses.foreachRDD((rdd) -> {
             long num = rdd.count();
             rdd.foreach((pair) -> {
-                //System.out.println("Count of elements in this rdd = " + num);
-                System.out.println(pair._1() + " = " + pair._2());
+                System.out.println(pair.getText());
+                //System.out.println(pair._1() + " = " + pair._2());
             });
         });
 

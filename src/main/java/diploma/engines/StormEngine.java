@@ -1,6 +1,7 @@
 package diploma.engines;
 
 import diploma.processors.NGramsProcessor;
+import diploma.processors.PrinterStatusProcessor;
 import diploma.processors.PrinterStringProcessor;
 import diploma.processors.Processor;
 import diploma.storm.*;
@@ -51,17 +52,20 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 1);
-//        topologyBuilder.setSpout("spout", new StringRandomSpout());
-        topologyBuilder.setBolt("bolt", new StormBolt(this.processor), 1)
+//        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+        topologyBuilder.setSpout("spout", new StringRandomSpout());
+        topologyBuilder.setBolt("bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
                 .shuffleGrouping("spout");
-        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 1)
-                .shuffleGrouping("bolt");
-        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-                .withWindow(
-                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),
-                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS))
-                , 1).shuffleGrouping("ngram-detection-bolt");
+
+//        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
+//                .shuffleGrouping("spout");
+//        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 1)
+//                .shuffleGrouping("bolt");
+//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+//                .withWindow(
+//                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),
+//                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS))
+//                , 1).shuffleGrouping("ngram-detection-bolt");
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("ngram-detection-bolt");
 

@@ -45,7 +45,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 //.setMaster("spark://172.31.22.231:7077")
-                .set("spark.streaming.kafka.maxRatePerPartition", "8")
+                .set("spark.streaming.kafka.maxRatePerPartition", "1")
                 ;
 
         /*

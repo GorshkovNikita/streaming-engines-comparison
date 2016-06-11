@@ -52,13 +52,15 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
-//        topologyBuilder.setSpout("spout", kafkaSpout, 1);
-        topologyBuilder.setSpout("spout", new StringRandomSpout());
-        topologyBuilder.setBolt("bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
+        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
                 .shuffleGrouping("spout");
 
-//        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
+        //topologyBuilder.setSpout("spout", new StringRandomSpout());
+//        topologyBuilder.setBolt("bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("spout");
+
+
 //        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 1)
 //                .shuffleGrouping("bolt");
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()

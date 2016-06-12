@@ -54,23 +54,25 @@ public class StormEngine extends AbstractEngine {
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1).setMaxSpoutPending(1);
-//        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
-//                .shuffleGrouping("spout");
 
-        //topologyBuilder.setSpout("spout", new StringRandomSpout());
-//        topologyBuilder.setBolt("bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
-//                .shuffleGrouping("spout");
+        // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
+        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
+                .shuffleGrouping("spout");
 
-
+        // Bolt определения N-gram
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
                 .shuffleGrouping("bolt");
+
+        // Bolt вывода N-gram
+        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
+                .shuffleGrouping("ngram-detection-bolt");
+
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
 //                .withWindow(
 //                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),
 //                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS))
 //                , 1).shuffleGrouping("ngram-detection-bolt");
-        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
-                .shuffleGrouping("ngram-detection-bolt");
+
 
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");

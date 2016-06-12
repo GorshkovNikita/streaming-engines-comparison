@@ -43,7 +43,8 @@ public class StormEngine extends AbstractEngine {
         // Указываем название темы Kafka, из которой берутся данные
         String topicName = "my-replicated-topic";
         // Указываем ip и порт zookeeper-сервера
-        BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
+        //BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
+        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново
@@ -52,7 +53,7 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+        topologyBuilder.setSpout("spout", kafkaSpout, 1).setMaxSpoutPending(1);
         topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
                 .shuffleGrouping("spout");
 
@@ -75,6 +76,7 @@ public class StormEngine extends AbstractEngine {
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
+        //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
 
         StormTopology topology = topologyBuilder.createTopology();
 

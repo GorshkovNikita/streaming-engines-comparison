@@ -1,9 +1,6 @@
 package diploma.engines;
 
-import diploma.processors.NGramsProcessor;
-import diploma.processors.PrinterStatusProcessor;
-import diploma.processors.PrinterStringProcessor;
-import diploma.processors.Processor;
+import diploma.processors.*;
 import diploma.storm.*;
 import org.apache.storm.*;
 import org.apache.storm.generated.StormTopology;
@@ -45,7 +42,7 @@ public class StormEngine extends AbstractEngine {
         topologyBuilder.setSpout("spout", kafkaSpout, 1).setMaxSpoutPending(1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new PrinterStatusProcessor()), 2)
+        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
                 .shuffleGrouping("spout");
 
         // Bolt определения N-gram

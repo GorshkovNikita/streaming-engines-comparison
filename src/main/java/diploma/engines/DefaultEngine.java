@@ -33,7 +33,6 @@ public class DefaultEngine extends AbstractEngine {
 
     public void process() {
         while (true) {
-
             String msg = Utilities.generateRandomString();
             if (msg == null) {
                 System.out.println("Did not receive a message in 1 second");

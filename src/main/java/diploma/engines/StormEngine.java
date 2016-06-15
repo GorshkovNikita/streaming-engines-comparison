@@ -5,24 +5,13 @@ import diploma.processors.PrinterStatusProcessor;
 import diploma.processors.PrinterStringProcessor;
 import diploma.processors.Processor;
 import diploma.storm.*;
-import org.apache.spark.streaming.Durations;
 import org.apache.storm.*;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.*;
-import org.apache.storm.kafka.trident.GlobalPartitionInformation;
-import org.apache.storm.shade.org.joda.time.Duration;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
-import org.apache.storm.topology.base.BaseWindowedBolt;
-import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Никита on 03.04.2016.
@@ -51,12 +40,12 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1).setMaxSpoutPending(1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-        topologyBuilder.setBolt("bolt", new StormBolt(new PrinterStatusProcessor()), 2)
+        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new PrinterStatusProcessor()), 2)
                 .shuffleGrouping("spout");
 
         // Bolt определения N-gram
@@ -78,7 +67,7 @@ public class StormEngine extends AbstractEngine {
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
-        //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
+        conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
 
         StormTopology topology = topologyBuilder.createTopology();
 

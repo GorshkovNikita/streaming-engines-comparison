@@ -24,7 +24,7 @@ public class MyKafkaSpout extends KafkaSpout {
 
     @Override
     public void nextTuple() {
-        //Utils.sleep(1000);
+        Utils.sleep(100);
         super.nextTuple();
     }
 }

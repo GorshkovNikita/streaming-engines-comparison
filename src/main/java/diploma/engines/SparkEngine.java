@@ -45,7 +45,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 //.setMaster("spark://172.31.22.231:7077")
-                .set("spark.streaming.kafka.maxRatePerPartition", "1")
+                .set("spark.streaming.kafka.maxRatePerPartition", "10")
                 ;
 
         /*
@@ -103,7 +103,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Фильтруем статусы, убирая null-объекты
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-        filteredStatuses = filteredStatuses.repartition(2);
+        JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
         // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
@@ -112,7 +112,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+        JavaDStream<String> ngrams = partitionedFilteredStatuses.flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 

@@ -93,7 +93,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
-        JavaDStream<Status> statuses = messages.map((status) -> {
+        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
             } catch (TwitterException ex) {

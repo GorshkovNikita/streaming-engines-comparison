@@ -47,7 +47,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 //.setMaster("spark://172.31.22.231:7077")
                 //.set("spark.default.parallelism", "2")
                 .set("spark.streaming.kafka.maxRatePerPartition", "1000")
-                .set("spark.locality.wait", "100ms")
+                .set("spark.locality.wait", "10ms")
                 ;
 
         /*

@@ -45,7 +45,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 //.setMaster("spark://172.31.22.231:7077")
-                //.set("spark.default.parallelism", "2")
+                .set("spark.default.parallelism", "2")
                 .set("spark.streaming.kafka.maxRatePerPartition", "1000")
                 ;
 
@@ -93,7 +93,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
 
         // Получаем статусы из сообщений
-        JavaDStream<Status> statuses = messages.repartition(2).map((status) -> {
+        JavaDStream<Status> statuses = messages.map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
             } catch (TwitterException ex) {
@@ -102,7 +102,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         });
 
         // Фильтруем статусы, убирая null-объекты
-        JavaDStream<Status> filteredStatuses = statuses.repartition(2).filter((status) -> status != null);
+        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
         //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
@@ -113,7 +113,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.repartition(2).flatMap(
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
@@ -124,9 +124,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //reducedMapNgrams
-        ngrams.repartition(2).foreachRDD((rdd) -> {
+        ngrams.foreachRDD((rdd) -> {
             rdd.foreach((status) -> {
-                System.out.println(status);
+                System.out.println(status + "PARTITIONS = " + rdd.partitions().size());
             });
         });
 

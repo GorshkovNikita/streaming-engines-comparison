@@ -125,8 +125,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //reducedMapNgrams
         ngrams.foreachRDD((rdd) -> {
+            int count = rdd.partitions().size();
             rdd.foreach((status) -> {
-                System.out.println(status + "PARTITIONS = " + rdd.partitions().size());
+                System.out.println(status + "PARTITIONS = " + count);
             });
         });
 

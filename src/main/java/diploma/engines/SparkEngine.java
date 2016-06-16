@@ -93,20 +93,20 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, String> partitionedMessages = messages.repartition(6);
 
         // Получаем статусы из сообщений
-//        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
-//            try {
-//                return TwitterObjectFactory.createStatus(status._2());
-//            } catch (TwitterException ex) {
-//                return null;
-//            }
-//        });
+        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
+            try {
+                return TwitterObjectFactory.createStatus(status._2());
+            } catch (TwitterException ex) {
+                return null;
+            }
+        });
 
         // Фильтруем статусы, убирая null-объекты
-//        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
-//
-//        JavaDStream<String> ngrams = filteredStatuses.flatMap(
-//                (status) -> nGramsProcessor.process(status.getText())
-//        );
+        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
+
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+                (status) -> nGramsProcessor.process(status.getText())
+        );
 
         //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
@@ -123,9 +123,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //        + value2, Durations.milliseconds(1000), Durations.milliseconds(1000));
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        partitionedMessages.foreachRDD((rdd) -> {
+        ngrams.foreachRDD((rdd) -> {
             rdd.foreach((status) -> {
-                System.out.println(status._2());
+                System.out.println(status);
             });
         });
 

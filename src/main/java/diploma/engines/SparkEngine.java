@@ -89,7 +89,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
@@ -103,7 +103,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Фильтруем статусы, убирая null-объекты
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-//        filteredStatuses = filteredStatuses.repartition(2);
+        filteredStatuses = filteredStatuses.repartition(2);
 
         // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
@@ -112,9 +112,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        //JavaDStream<String> ngrams = filteredStatuses.flatMap(
-        //        (status) -> nGramsProcessor.process(status.getText())
-        //);
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+                (status) -> nGramsProcessor.process(status.getText())
+        );
 
         //JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
@@ -123,12 +123,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //reducedMapNgrams
-        filteredStatuses.foreachRDD((rdd) -> {
-            long num = rdd.count();
-            rdd.foreach((pair) -> {
-                System.out.println(pair.getText());
-                //System.out.println(pair._1() + " = " + pair._2());
-            });
+        ngrams.foreachRDD((rdd) -> {
+            rdd.foreach(System.out::println);
         });
 
         ssc.start();

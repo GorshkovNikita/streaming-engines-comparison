@@ -45,8 +45,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
                 //.setMaster("spark://172.31.22.231:7077")
-                .set("spark.streaming.kafka.maxRatePerPartition", "10")
                 //.set("spark.default.parallelism", "2")
+                .set("spark.streaming.kafka.maxRatePerPartition", "1000")
                 ;
 
         /*
@@ -90,7 +90,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {

@@ -90,7 +90,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(6);
 
         // Получаем статусы из сообщений
 //        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {

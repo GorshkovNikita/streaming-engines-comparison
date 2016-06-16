@@ -80,7 +80,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // список брокеров Kafka
         //kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
         kafkaParams.put("metadata.broker.list", "192.168.1.23:9092, 192.168.1.22:9092");
-        
+
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =
                 KafkaUtils.createDirectStream(ssc,
@@ -89,7 +89,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
@@ -103,7 +103,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Фильтруем статусы, убирая null-объекты
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-        JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
+        //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
         // Обрабатываем каждую RDD из потока
         // processor::process equivalent to (status) -> processor.process(status)
@@ -112,7 +112,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = partitionedFilteredStatuses.flatMap(
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
@@ -124,7 +124,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //reducedMapNgrams
         ngrams.foreachRDD((rdd) -> {
-            rdd.foreach(System.out::println);
+            rdd.foreach((status) -> {
+                System.out.println(status);
+            });
         });
 
         ssc.start();

@@ -79,7 +79,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
         //kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
-        kafkaParams.put("metadata.broker.list", "192.168.1.23:9092");
+        kafkaParams.put("metadata.broker.list", "192.168.1.23:9092, 192.168.1.22:9092");
 
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =

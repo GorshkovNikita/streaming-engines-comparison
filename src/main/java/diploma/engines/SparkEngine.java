@@ -90,10 +90,10 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                         kafkaParams, topics);
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
+        //JavaPairDStream<String, String> partitionedMessages = messages.repartition(1);
 
         // Получаем статусы из сообщений
-        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
+        JavaDStream<Status> statuses = messages.repartition(2).map((status) -> {
             try {
                 return TwitterObjectFactory.createStatus(status._2());
             } catch (TwitterException ex) {
@@ -102,7 +102,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         });
 
         // Фильтруем статусы, убирая null-объекты
-        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
+        JavaDStream<Status> filteredStatuses = statuses.repartition(2).filter((status) -> status != null);
 
         //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
@@ -113,7 +113,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+        JavaDStream<String> ngrams = filteredStatuses.repartition(2).flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
@@ -124,7 +124,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //reducedMapNgrams
-        ngrams.foreachRDD((rdd) -> {
+        ngrams.repartition(2).foreachRDD((rdd) -> {
             rdd.foreach((status) -> {
                 System.out.println(status);
             });

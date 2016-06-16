@@ -1,6 +1,7 @@
 package diploma.storm;
 
 import com.google.common.base.Strings;
+import diploma.Utilities;
 import org.apache.storm.Config;
 import org.apache.storm.kafka.*;
 import org.apache.storm.metric.api.IMetric;
@@ -24,7 +25,8 @@ public class MyKafkaSpout extends KafkaSpout {
 
     @Override
     public void nextTuple() {
-        Utils.sleep(1);
+        //Utils.sleep(1);
+        Utilities.testWait(130000);
         super.nextTuple();
     }
 }

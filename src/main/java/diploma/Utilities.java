@@ -39,4 +39,14 @@ public class Utilities {
             return randomInt - 1;
         }
     }
+
+    public static void testWait(long interval) {
+        final long INTERVAL = interval;
+        long start = System.nanoTime();
+        long end=0;
+        do{
+            end = System.nanoTime();
+        } while(start + INTERVAL >= end);
+        // System.out.println(end - start);
+    }
 }

@@ -39,20 +39,29 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+//        topologyBuilder.setSpout("spout", kafkaSpout, 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
-                .shuffleGrouping("spout");
+//        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
+//                .shuffleGrouping("spout");
 
         // Bolt определения N-gram
-        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
-                .shuffleGrouping("bolt");
+//        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
+//                .shuffleGrouping("bolt");
 
         // Bolt вывода N-gram
-        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
-                .shuffleGrouping("ngram-detection-bolt");
+//        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
+//                .shuffleGrouping("ngram-detection-bolt");
 
+
+        //----------------------------------------------------------------------------------------
+
+        // Тестовая топология для контроля скорости
+        topologyBuilder.setSpout("spout", new StringRandomSpout(), 1);
+        topologyBuilder.setBolt("printer-bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
+                .shuffleGrouping("spout");
+
+        //----------------------------------------------------------------------------------------
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
 //                .withWindow(
 //                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),

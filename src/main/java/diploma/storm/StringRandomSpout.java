@@ -1,6 +1,7 @@
 package diploma.storm;
 
 import diploma.Utilities;
+import diploma.client.TwitterQueueRestClient;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -9,6 +10,7 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -18,9 +20,6 @@ import java.util.concurrent.TimeUnit;
 public class StringRandomSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
     private int msgId = 0;
-    private int counter = 0;
-    private int currentSecond = 0;
-    private final int tuplesPerSecond = 5;
 
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
@@ -29,19 +28,14 @@ public class StringRandomSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        //Utils.sleep(1000);
-        if(counter == tuplesPerSecond) {
-            int newSecond = (int) TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
-            if(newSecond <= currentSecond) {
-                return;
-            }
-
-            counter = 0;
-            currentSecond = newSecond;
+        try {
+            String msg = TwitterQueueRestClient.nextMessage();
+            if (msg != null)
+                collector.emit(new Values(msg, ++msgId), msgId);
         }
-
-        ++counter;
-        collector.emit(new Values(Utilities.generateRandomString(), ++msgId), msgId);
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

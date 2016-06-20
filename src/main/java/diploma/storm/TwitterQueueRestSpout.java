@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by ngorshkov on 5/16/16.
  */
-public class StringRandomSpout extends BaseRichSpout {
+public class TwitterQueueRestSpout extends BaseRichSpout {
     private SpoutOutputCollector collector;
     private int msgId = 0;
 

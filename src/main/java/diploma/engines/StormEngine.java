@@ -27,39 +27,40 @@ public class StormEngine extends AbstractEngine {
     public void run() throws Exception {
         TopologyBuilder topologyBuilder = new TopologyBuilder();
         // Указываем название темы Kafka, из которой берутся данные
-        String topicName = "my-replicated-topic";
+//        String topicName = "my-replicated-topic";
         // Указываем ip и порт zookeeper-сервера
         //BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
-        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
-        SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
+//        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
+//        SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново
-        spoutConfig.ignoreZkOffsets = true;
+//        spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
-        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
+//        spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
+//        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
 //        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-//        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
-//                .shuffleGrouping("spout");
+        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
+                .shuffleGrouping("spout");
 
         // Bolt определения N-gram
-//        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
-//                .shuffleGrouping("bolt");
+        topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
+                .shuffleGrouping("bolt");
 
         // Bolt вывода N-gram
-//        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
-//                .shuffleGrouping("ngram-detection-bolt");
+        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
+                .shuffleGrouping("ngram-detection-bolt");
 
 
         //----------------------------------------------------------------------------------------
 
         // Тестовая топология для контроля скорости
-        topologyBuilder.setSpout("spout", new StringRandomSpout(), 1);
-        topologyBuilder.setBolt("printer-bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
-                .shuffleGrouping("spout");
+//        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
+//        topologyBuilder.setBolt("printer-bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
+//                .shuffleGrouping("spout");
 
         //----------------------------------------------------------------------------------------
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()

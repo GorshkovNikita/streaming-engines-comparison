@@ -60,7 +60,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(5));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
 //        Map<String, Integer> topics = new HashMap<>();
@@ -127,8 +127,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         ngrams.foreachRDD((rdd) -> {
-            rdd.foreach((status) -> {
-                System.out.println(status);
+            rdd.foreach((ngram) -> {
+                System.out.println(ngram);
             });
         });
 

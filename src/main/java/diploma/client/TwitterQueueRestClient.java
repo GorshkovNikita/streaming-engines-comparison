@@ -15,7 +15,7 @@ import java.io.IOException;
 public class TwitterQueueRestClient {
     public static String nextMessage() throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet("http://localhost:8080/twitter-queue/");
+        HttpGet httpGet = new HttpGet("http://192.168.1.21:7070/queue/");
         CloseableHttpResponse response = httpclient.execute(httpGet);
         try {
             String responseBody = EntityUtils.toString(response.getEntity());

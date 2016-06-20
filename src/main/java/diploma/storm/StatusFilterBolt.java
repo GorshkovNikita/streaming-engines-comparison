@@ -26,7 +26,7 @@ public class StatusFilterBolt extends AbstractBasicBolt {
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
         // Имя поля обозначено в классе StringScheme
-        Status status = (Status) processor.process(tuple.getStringByField("str"));
+        Status status = (Status) processor.process(tuple.getStringByField("status"));
         if (status != null)
             collector.emit(new ArrayList<Object>(){{ add(status.getText());}});
     }

@@ -69,36 +69,36 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //                KafkaUtils.createStream(ssc, "192.168.1.21:2181", "tweets-consumer", topics, StorageLevel.MEMORY_ONLY());
 
         // Множество строк, соответствующим темам в Kafka, из которых берутся данные
-//        Set<String> topics = new HashSet<>();
-//        topics.add("my-replicated-topic");
+        Set<String> topics = new HashSet<>();
+        topics.add("my-replicated-topic");
 
         // Настраиваем Kafka consumer
-//        Map<String, String> kafkaParams = new HashMap<>();
+        Map<String, String> kafkaParams = new HashMap<>();
         // id группы потребителей
-//        kafkaParams.put("group.id", "spark-consumer");
+        kafkaParams.put("group.id", "spark-consumer");
         // при каждом запуске приложения сообщения из Kafka читать заново
-//        kafkaParams.put("auto.offset.reset", "smallest");
-        //kafkaParams.put("zookeeper.connect", ":2181");
+        kafkaParams.put("auto.offset.reset", "smallest");
+//        kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
-        //kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
-//        kafkaParams.put("metadata.broker.list", "192.168.1.23:9092, 192.168.1.22:9092");
+//        kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
+        kafkaParams.put("metadata.broker.list", "192.168.1.23:9092, 192.168.1.22:9092");
 
         // Создаем DStream, забирающий данные из Kafka
-//        JavaPairInputDStream<String, String> messages =
-//                KafkaUtils.createDirectStream(ssc,
-//                        String.class, String.class, // типы пары ключ - значение данных из Kafka
-//                        StringDecoder.class, StringDecoder.class, // классы десериализаторов
-//                        kafkaParams, topics);
+        JavaPairInputDStream<String, String> messages =
+                KafkaUtils.createDirectStream(ssc,
+                        String.class, String.class, // типы пары ключ - значение данных из Kafka
+                        StringDecoder.class, StringDecoder.class, // классы десериализаторов
+                        kafkaParams, topics);
 
-        JavaDStream<String> customReceiverStream = ssc.receiverStream(new CustomReceiver(StorageLevel.MEMORY_ONLY()));
+//        JavaDStream<String> customReceiverStream = ssc.receiverStream(new CustomReceiver(StorageLevel.MEMORY_ONLY()));
 
         // Распараллеливаем наши RDD на 4 потока
-        JavaDStream<String> partitionedMessages = customReceiverStream.repartition(2);
+        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
             try {
-                return TwitterObjectFactory.createStatus(status);
+                return TwitterObjectFactory.createStatus(status._2());
             } catch (TwitterException ex) {
                 return null;
             }

@@ -44,6 +44,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
+                .set("spark.eventLog.dir", "/home/ngorshkov/diploma/spark-history")
+                .set("spark.eventLog.enabled", "true")
                 //.setMaster("spark://172.31.22.231:7077")
                 //.set("spark.default.parallelism", "2")
                 //.set("spark.streaming.kafka.maxRatePerPartition", "750")

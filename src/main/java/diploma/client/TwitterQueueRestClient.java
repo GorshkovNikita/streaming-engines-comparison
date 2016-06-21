@@ -13,17 +13,23 @@ import java.io.IOException;
  * Created by Никита on 19.06.2016.
  */
 public class TwitterQueueRestClient {
+    private static CloseableHttpClient httpclient;
+    private static HttpGet httpGet;
+
+    static {
+        httpclient = HttpClients.createDefault();
+        httpGet = new HttpGet("http://192.168.1.21:7070/queue/");
+    }
+
     public static String nextMessage() throws IOException {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet("http://192.168.1.21:7070/queue/");
         CloseableHttpResponse response = httpclient.execute(httpGet);
-        try {
-            String responseBody = EntityUtils.toString(response.getEntity());
-            return !responseBody.equals("empty") ? responseBody : null;
-        } finally {
-            response.close();
-            httpclient.close();
-        }
+//        try {
+        String responseBody = EntityUtils.toString(response.getEntity());
+        return !responseBody.equals("empty") ? responseBody : null;
+//        } finally {
+//            response.close();
+//            httpclient.close();
+//        }
     }
 
     public static void main(String[] args) throws IOException {

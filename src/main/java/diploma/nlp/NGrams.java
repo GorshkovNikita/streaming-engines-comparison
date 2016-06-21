@@ -34,7 +34,8 @@ public class NGrams {
         long start = System.nanoTime();
         String str = "Журналист Павел Лобков уходит с \"Дождя\" из-за несогласия с новой политикой канала, а потом " +
                 "собирается получить работу на яндекс радио для того, чтобы получать деньги";
-        allNGrams(str).forEach(System.out::println);
+        for (int i = 0; i < 1000; i++)
+            allNGrams(str);//.forEach(System.out::println);
         System.out.println();
         System.out.println("\n" + (System.nanoTime() - start) / 1000000);
     }

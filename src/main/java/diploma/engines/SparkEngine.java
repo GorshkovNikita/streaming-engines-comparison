@@ -109,9 +109,15 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Фильтруем статусы, убирая null-объекты
         JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
-                (status) -> nGramsProcessor.process(status.getText())
-        );
+        filteredStatuses.foreachRDD((rdd) -> {
+            rdd.foreach((status) -> {
+                nGramsProcessor.process(status.getText());
+            });
+        });
+        
+//        JavaDStream<String> ngrams = filteredStatuses.flatMap(
+//                (status) -> nGramsProcessor.process(status.getText())
+//        );
 
         //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
 
@@ -128,11 +134,11 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //        + value2, Durations.milliseconds(1000), Durations.milliseconds(1000));
 
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        ngrams.foreachRDD((rdd) -> {
-            rdd.foreach((ngram) -> {
-                System.out.println(ngram);
-            });
-        });
+//        ngrams.foreachRDD((rdd) -> {
+//            rdd.foreach((ngram) -> {
+//                System.out.println(ngram);
+//            });
+//        });
 
         ssc.start();
         ssc.awaitTermination();

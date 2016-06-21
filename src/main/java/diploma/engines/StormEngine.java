@@ -51,8 +51,8 @@ public class StormEngine extends AbstractEngine {
                 .shuffleGrouping("bolt");
 
         // Bolt вывода N-gram
-        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
-                .shuffleGrouping("ngram-detection-bolt");
+//        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
+//                .shuffleGrouping("ngram-detection-bolt");
 
 
         //----------------------------------------------------------------------------------------

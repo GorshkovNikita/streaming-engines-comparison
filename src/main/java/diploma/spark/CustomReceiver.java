@@ -37,7 +37,6 @@ public class CustomReceiver extends Receiver<String> {
         while (!isStopped()) {
             try {
                 String msg = TwitterQueueRestClient.nextMessage();
-                System.out.println(msg);
                 if (msg != null)
                     store(msg);
             }

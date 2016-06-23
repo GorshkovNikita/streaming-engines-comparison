@@ -74,7 +74,7 @@ public class StormEngine extends AbstractEngine {
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(25);
+        //conf.setMaxSpoutPending(15);
         //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
 
         StormTopology topology = topologyBuilder.createTopology();

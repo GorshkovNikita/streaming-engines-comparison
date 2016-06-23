@@ -39,16 +39,18 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 2);//.setMaxSpoutPending(10);
+        topologyBuilder.setSpout("spout", kafkaSpout, 2).setMaxSpoutPending(2);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
         topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
-                .shuffleGrouping("spout");
+                .shuffleGrouping("spout")
+                .setMaxSpoutPending(2);
 
         // Bolt определения N-gram
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
-                .shuffleGrouping("bolt");
+                .shuffleGrouping("bolt")
+                .setMaxSpoutPending(2);
 
         // Bolt вывода N-gram
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)

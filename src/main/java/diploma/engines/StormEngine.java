@@ -7,8 +7,11 @@ import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.*;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Никита on 03.04.2016.
@@ -63,11 +66,11 @@ public class StormEngine extends AbstractEngine {
 //                .shuffleGrouping("spout");
 
         //----------------------------------------------------------------------------------------
-//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-//                .withWindow(
-//                        new BaseWindowedBolt.Duration(50, TimeUnit.MILLISECONDS),
-//                        new BaseWindowedBolt.Duration(60, TimeUnit.MILLISECONDS))
-//                , 1).shuffleGrouping("ngram-detection-bolt");
+        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+                .withWindow(
+                        new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS),
+                        new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS))
+                , 1).shuffleGrouping("ngram-detection-bolt");
 
 
         // TODO: сделать нормальное создание цепочки обработчиков

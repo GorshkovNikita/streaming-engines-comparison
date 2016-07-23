@@ -122,17 +122,19 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        //JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
-        //JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow((value1, value2) -> value1
-        //        + value2, Durations.milliseconds(1000), Durations.milliseconds(1000));
+        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
+                (value1, value2) -> value1 + value2, Durations.seconds(2), Durations.seconds(2));
 
-        //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        ngrams.foreachRDD((rdd) -> {
-            rdd.foreach((ngram) -> {
-                //System.out.println(ngram);
-            });
-        });
+        JavaDStream<Long> count = reducedMapNgrams.count();
+        count.print(1);
+
+//        reducedMapNgrams.foreachRDD((rdd) -> {
+//            rdd.foreach((ngram) -> {
+//                System.out.println(ngram._1() + " " + ngram._2() + " раз.");
+//            });
+//        });
 
         ssc.start();
         ssc.awaitTermination();

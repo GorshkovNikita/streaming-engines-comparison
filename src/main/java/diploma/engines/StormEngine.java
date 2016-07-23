@@ -29,15 +29,15 @@ public class StormEngine extends AbstractEngine {
         // Указываем название темы Kafka, из которой берутся данные
         String topicName = "my-replicated-topic";
         // Указываем ip и порт zookeeper-сервера
-        //BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
-        BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
+        BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
+        //BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
+        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 2);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);

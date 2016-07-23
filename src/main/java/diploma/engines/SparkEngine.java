@@ -44,11 +44,11 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .set("spark.eventLog.dir", "/home/ngorshkov/diploma/spark-history")
-                .set("spark.eventLog.enabled", "true")
+                //.set("spark.eventLog.dir", "/home/ngorshkov/diploma/spark-history")
+                //.set("spark.eventLog.enabled", "true")
                 //.setMaster("spark://172.31.22.231:7077")
                 //.set("spark.default.parallelism", "2")
-                .set("spark.streaming.kafka.maxRatePerPartition", "2500")
+                .set("spark.streaming.kafka.maxRatePerPartition", "2750")
                 //.set("spark.locality.wait", "10ms")
                 ;
 
@@ -82,8 +82,8 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         kafkaParams.put("auto.offset.reset", "smallest");
 //        kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
-//        kafkaParams.put("metadata.broker.list", "172.31.22.14:9092");
-        kafkaParams.put("metadata.broker.list", "192.168.1.22:9092");
+        kafkaParams.put("metadata.broker.list", "172.31.16.35:9092");
+//        kafkaParams.put("metadata.broker.list", "192.168.1.22:9092");
 
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =

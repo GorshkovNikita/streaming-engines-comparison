@@ -1,3 +1,4 @@
 .idea/
 target/
 streaming-engines-comparison.iml
+src/main/resources/network-settings.properties

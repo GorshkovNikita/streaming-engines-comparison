@@ -1,5 +1,6 @@
 package diploma.engines;
 
+import diploma.Config;
 import diploma.nlp.NGrams;
 import diploma.processors.NGramsProcessor;
 import diploma.processors.Processor;
@@ -44,12 +45,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                //.set("spark.eventLog.dir", "/home/ngorshkov/diploma/spark-history")
-                //.set("spark.eventLog.enabled", "true")
-                //.setMaster("spark://172.31.22.231:7077")
-                //.set("spark.default.parallelism", "2")
                 .set("spark.streaming.kafka.maxRatePerPartition", "2750")
-                //.set("spark.locality.wait", "10ms")
                 ;
 
         /*
@@ -64,15 +60,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем главную точку входа движка Spark Streaming
         JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
-        // TODO: сделать так, чтобы Spark читал сообщения с начала (свойство kafka consumer auto.offset.reset smallest)
-//        Map<String, Integer> topics = new HashMap<>();
-//        topics.put("my-replicated-topic", 1);
-//        JavaPairReceiverInputDStream<String, String> messages =
-//                KafkaUtils.createStream(ssc, "192.168.1.21:2181", "tweets-consumer", topics, StorageLevel.MEMORY_ONLY());
-
         // Множество строк, соответствующим темам в Kafka, из которых берутся данные
         Set<String> topics = new HashSet<>();
-        topics.add("my-replicated-topic");
+        topics.add(Config.KAFKA_TOPIC);
 
         // Настраиваем Kafka consumer
         Map<String, String> kafkaParams = new HashMap<>();
@@ -82,8 +72,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         kafkaParams.put("auto.offset.reset", "smallest");
 //        kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
-        kafkaParams.put("metadata.broker.list", "172.31.16.35:9092");
-//        kafkaParams.put("metadata.broker.list", "192.168.1.22:9092");
+        kafkaParams.put("metadata.broker.list", Config.KAFKA_BROKER_LIST);
 
         // Создаем DStream, забирающий данные из Kafka
         JavaPairInputDStream<String, String> messages =
@@ -122,12 +111,12 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+//        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+//
+//        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
+//                (value1, value2) -> value1 + value2, Durations.seconds(2), Durations.seconds(2));
 
-        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
-                (value1, value2) -> value1 + value2, Durations.seconds(2), Durations.seconds(2));
-
-        JavaDStream<Long> count = reducedMapNgrams.count();
+        JavaDStream<Long> count = ngrams.count();
         count.print(1);
 
 //        reducedMapNgrams.foreachRDD((rdd) -> {

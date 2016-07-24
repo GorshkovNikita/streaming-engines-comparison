@@ -1,8 +1,10 @@
 package diploma.engines;
 
+import diploma.*;
 import diploma.processors.*;
 import diploma.storm.*;
 import org.apache.storm.*;
+import org.apache.storm.Config;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.*;
 import org.apache.storm.spout.SchemeAsMultiScheme;
@@ -30,10 +32,9 @@ public class StormEngine extends AbstractEngine {
     public void run() throws Exception {
         TopologyBuilder topologyBuilder = new TopologyBuilder();
         // Указываем название темы Kafka, из которой берутся данные
-        String topicName = "my-replicated-topic";
+        String topicName = diploma.Config.KAFKA_TOPIC;
         // Указываем ip и порт zookeeper-сервера
-        BrokerHosts hosts = new ZkHosts("172.31.22.231:2181");
-        //BrokerHosts hosts = new ZkHosts("192.168.1.21:2181");
+        BrokerHosts hosts = new ZkHosts(diploma.Config.ZOOKEEPER_ID + ":" + diploma.Config.ZOOKEEPER_PORT);
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново
@@ -57,7 +58,6 @@ public class StormEngine extends AbstractEngine {
 //        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
 //                .shuffleGrouping("ngram-detection-bolt");
 
-
         //----------------------------------------------------------------------------------------
 
         // Тестовая топология для контроля скорости
@@ -70,7 +70,7 @@ public class StormEngine extends AbstractEngine {
                 .withWindow(
                         new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS),
                         new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS))
-                , 1).shuffleGrouping("ngram-detection-bolt");
+                , 2).shuffleGrouping("ngram-detection-bolt");
 
 
         // TODO: сделать нормальное создание цепочки обработчиков

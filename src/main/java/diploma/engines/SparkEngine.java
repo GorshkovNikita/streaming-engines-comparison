@@ -7,6 +7,7 @@ import diploma.processors.Processor;
 import diploma.spark.CustomReceiver;
 import kafka.serializer.StringDecoder;
 import org.apache.spark.*;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.network.protocol.Encoders;
 import org.apache.spark.storage.StorageLevel;
@@ -25,6 +26,7 @@ import twitter4j.TwitterObjectFactory;
 import javax.swing.event.InternalFrameEvent;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Created by Никита on 06.04.2016.
@@ -116,7 +118,14 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
                 (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
 
-        JavaDStream<Long> windowCount = reducedMapNgrams.count();
+        JavaPairDStream<String, Integer> reducedAndSortedMapNgrams = reducedMapNgrams.transformToPair((rdd) -> {
+            rdd.foreach(item -> item.swap());
+            rdd.sortByKey();
+            rdd.foreach(item -> item.swap());
+            return rdd;
+        });
+
+        //JavaDStream<Long> windowCount = reducedMapNgrams.count();
 //        JavaDStream<Long> ngramsCount = ngrams.count();
 
 //        count.foreachRDD((rdd) -> {
@@ -125,9 +134,10 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            });
 //        });
 
-        windowCount.foreachRDD((windowrdd) -> {
+        reducedAndSortedMapNgrams.foreachRDD((windowrdd) -> {
             windowrdd.foreach((window) -> {
-                System.out.println(window);
+                if (window._2() >= 5)
+                    System.out.println(window._1() + " " + window._2() + " раз");
             });
         });
 

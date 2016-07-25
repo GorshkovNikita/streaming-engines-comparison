@@ -1,8 +1,7 @@
 package diploma;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -21,7 +20,15 @@ public class Config {
         String kafkaBrokerList;
         String kafkaTopic;
         String kafkaBrokerPort;
-        try (InputStream in = new FileInputStream("/home/ngorshkov/diploma/streaming-engines-comparison/src/main/resources/network-settings.properties")) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            File file;
+            URL fileURL = classLoader.getResource("network-settings.properties");
+            if (fileURL != null)
+                file = new File(fileURL.getPath());
+            else
+                throw new FileNotFoundException();
+            InputStream in = new FileInputStream(file);
             Properties prop = new Properties();
             prop.load(in);
             zookeeperId = prop.getProperty("zookeeper.ip");
@@ -29,7 +36,7 @@ public class Config {
             kafkaBrokerList = prop.getProperty("kafka.broker.list");
             kafkaBrokerPort = prop.getProperty("kafka.broker.port");
             kafkaTopic = prop.getProperty("kafka.topic");
-        } catch (IOException e) {
+        } catch (Exception e) {
             zookeeperId = "";
             zookeeperPort = "";
             kafkaBrokerList = "";

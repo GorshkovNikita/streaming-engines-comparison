@@ -21,13 +21,7 @@ public class Config {
         String kafkaTopic;
         String kafkaBrokerPort;
         try {
-            File file;
-            URL fileURL = Config.class.getResource("network-settings.properties");
-            if (fileURL != null)
-                file = new File(fileURL.getPath());
-            else
-                throw new FileNotFoundException();
-            InputStream in = new FileInputStream(file);
+            InputStream in = Config.class.getResourceAsStream("/network-settings.properties");
             Properties prop = new Properties();
             prop.load(in);
             zookeeperId = prop.getProperty("zookeeper.ip");

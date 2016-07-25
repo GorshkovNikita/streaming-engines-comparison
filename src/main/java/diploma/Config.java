@@ -20,10 +20,9 @@ public class Config {
         String kafkaBrokerList;
         String kafkaTopic;
         String kafkaBrokerPort;
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             File file;
-            URL fileURL = classLoader.getResource("network-settings.properties");
+            URL fileURL = Config.class.getResource("network-settings.properties");
             if (fileURL != null)
                 file = new File(fileURL.getPath());
             else

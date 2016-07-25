@@ -135,10 +135,10 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //        });
 
         reducedAndSortedMapNgrams.foreachRDD((windowrdd) -> {
-            System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
+            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
             windowrdd.foreach((window) -> {
-                if (window._2() >= 20)
-                    System.out.println(window._1() + " " + window._2() + " раз");
+                if (window._2() >= 50)
+                    LOG.info(window._1() + " " + window._2() + " раз");
             });
         });
 

@@ -21,7 +21,7 @@ public class Config {
         String kafkaBrokerList;
         String kafkaTopic;
         String kafkaBrokerPort;
-        try (InputStream in = new FileInputStream("src/main/resources/network-settings.properties")) {
+        try (InputStream in = new FileInputStream("/home/ngorshkov/diploma/streaming-engines-comparison/src/main/resources/network-settings.properties")) {
             Properties prop = new Properties();
             prop.load(in);
             zookeeperId = prop.getProperty("zookeeper.ip");

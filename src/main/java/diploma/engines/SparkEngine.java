@@ -45,7 +45,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .set("spark.streaming.kafka.maxRatePerPartition", "2750")
+                .set("spark.streaming.kafka.maxRatePerPartition", "500")
                 ;
 
         /*
@@ -111,17 +111,30 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            rdd.foreach(processor::process);
 //        });
 
-//        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
-//
-//        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
-//                (value1, value2) -> value1 + value2, Durations.seconds(2), Durations.seconds(2));
+        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
-        JavaDStream<Long> count = ngrams.count();
-        count.print(1);
+        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
+                (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
 
-//        reducedMapNgrams.foreachRDD((rdd) -> {
+        JavaDStream<Long> windowCount = reducedMapNgrams.count();
+//        JavaDStream<Long> ngramsCount = ngrams.count();
+
+//        count.foreachRDD((rdd) -> {
+//            rdd.foreach((num) -> {
+//                System.out.println(num);
+//            });
+//        });
+
+        windowCount.foreachRDD((windowrdd) -> {
+            windowrdd.foreach((window) -> {
+                System.out.println(window);
+            });
+        });
+
+//        ngramsCount.foreachRDD((rdd) -> {
 //            rdd.foreach((ngram) -> {
-//                System.out.println(ngram._1() + " " + ngram._2() + " раз.");
+//                System.out.println(ngram);
+//                //System.out.println(ngram._1() + " " + ngram._2() + " раз.");
 //            });
 //        });
 

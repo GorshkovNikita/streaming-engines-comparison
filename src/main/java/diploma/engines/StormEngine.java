@@ -1,6 +1,5 @@
 package diploma.engines;
 
-import diploma.*;
 import diploma.processors.*;
 import diploma.storm.*;
 import org.apache.storm.*;
@@ -12,8 +11,6 @@ import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Никита on 03.04.2016.
@@ -34,7 +31,8 @@ public class StormEngine extends AbstractEngine {
         // Указываем название темы Kafka, из которой берутся данные
         String topicName = diploma.Config.KAFKA_TOPIC;
         // Указываем ip и порт zookeeper-сервера
-        BrokerHosts hosts = new ZkHosts(diploma.Config.ZOOKEEPER_ID + ":" + diploma.Config.ZOOKEEPER_PORT);
+//        BrokerHosts hosts = new ZkHosts(diploma.Config.ZOOKEEPER_IP + ":" + diploma.Config.ZOOKEEPER_PORT);
+        BrokerHosts hosts = new ZkHosts("192.168.1.29:2181");
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново

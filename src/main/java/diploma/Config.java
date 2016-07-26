@@ -1,14 +1,13 @@
 package diploma;
 
 import java.io.*;
-import java.net.URL;
 import java.util.Properties;
 
 /**
  * @author Никита
  */
 public class Config {
-    public static final String ZOOKEEPER_ID;
+    public static final String ZOOKEEPER_IP;
     public static final String ZOOKEEPER_PORT;
     public static final String KAFKA_BROKER_LIST;
     public static final String KAFKA_BROKER_PORT;
@@ -37,7 +36,7 @@ public class Config {
             kafkaBrokerPort = "";
             e.printStackTrace();
         }
-        ZOOKEEPER_ID = zookeeperId;
+        ZOOKEEPER_IP = zookeeperId;
         ZOOKEEPER_PORT = zookeeperPort;
         KAFKA_BROKER_LIST = kafkaBrokerList;
         KAFKA_TOPIC = kafkaTopic;

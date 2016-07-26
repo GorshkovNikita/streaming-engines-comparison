@@ -1,5 +1,6 @@
 package diploma.storm;
 
+import org.apache.storm.metric.api.CountMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -19,14 +20,17 @@ import java.util.Map;
 public class NGramsCountWindowBolt extends BaseWindowedBolt {
     private int counter = 0;
     private OutputCollector collector;
+    private CountMetric countMetric;
     @Override
-    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector){
+    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        countMetric = new CountMetric();
         this.collector = collector;
+        context.registerMetric("count-of-windows", countMetric, 60);
     }
 
     @Override
     public void execute(TupleWindow inputWindow) {
-        counter++;
+        countMetric.incr();
         Map<String, Integer> ngrams = new HashMap<>();
         for (Tuple tuple : inputWindow.get()) {
             String ngram = tuple.getStringByField("ngram");
@@ -35,7 +39,6 @@ public class NGramsCountWindowBolt extends BaseWindowedBolt {
             else
                 ngrams.put(ngram, 1);
         }
-        System.out.println("НОВОЕ ОКНО = " + counter);
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //for (Map.Entry<String, Integer> ngram : ngrams.entrySet())
             //System.out.println(ngram.getKey() + " = " + ngram.getValue());

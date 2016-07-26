@@ -31,8 +31,7 @@ public class StormEngine extends AbstractEngine {
         // Указываем название темы Kafka, из которой берутся данные
         String topicName = diploma.Config.KAFKA_TOPIC;
         // Указываем ip и порт zookeeper-сервера
-//        BrokerHosts hosts = new ZkHosts(diploma.Config.ZOOKEEPER_IP + ":" + diploma.Config.ZOOKEEPER_PORT);
-        BrokerHosts hosts = new ZkHosts("192.168.1.29:2181");
+        BrokerHosts hosts = new ZkHosts(diploma.Config.ZOOKEEPER_IP + ":" + diploma.Config.ZOOKEEPER_PORT);
         SpoutConfig spoutConfig = new SpoutConfig(hosts, topicName, "/" + topicName, "kafkastorm");
         // игнорируем смещение, записанное в zookeeper,
         // чтобы при каждом новом сабмите топологии сообщения читались заново

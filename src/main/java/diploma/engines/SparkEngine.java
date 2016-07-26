@@ -5,6 +5,7 @@ import diploma.nlp.NGrams;
 import diploma.processors.NGramsProcessor;
 import diploma.processors.Processor;
 import diploma.spark.CustomReceiver;
+import diploma.Utilities;
 import kafka.serializer.StringDecoder;
 import org.apache.spark.*;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -118,12 +119,12 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
                 (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
 
-        JavaPairDStream<String, Integer> reducedAndSortedMapNgrams = reducedMapNgrams.transformToPair((rdd) -> {
-            rdd.foreach(item -> item.swap());
-            rdd.sortByKey();
-            rdd.foreach(item -> item.swap());
-            return rdd;
-        });
+//        JavaPairDStream<String, Integer> reducedAndSortedMapNgrams = reducedMapNgrams.transformToPair((rdd) -> {
+//            JavaPairRDD<Integer, String> swaped = rdd.mapToPair(item -> item.swap());
+//            JavaPairRDD<Integer, String> swapedAndSorted = swaped.sortByKey();
+//            rdd = swapedAndSorted.mapToPair(item -> item.swap());
+//            return rdd;
+//        });
 
         //JavaDStream<Long> windowCount = reducedMapNgrams.count();
 //        JavaDStream<Long> ngramsCount = ngrams.count();
@@ -134,12 +135,17 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //            });
 //        });
 
-        reducedAndSortedMapNgrams.foreachRDD((windowrdd) -> {
+        reducedMapNgrams.foreachRDD((windowrdd) -> {
             LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
-            windowrdd.foreach((window) -> {
-                if (window._2() >= 50)
-                    LOG.info(window._1() + " " + window._2() + " раз");
-            });
+            Map<String, Integer> map = windowrdd.collectAsMap();
+            List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
+            for (int i = 0; i < 50; i++) {
+                LOG.info(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
+            }
+//            windowrdd.foreach((window) -> {
+//                if (window._2() >= 50)
+//                    System.out.println(window._1() + " " + window._2() + " раз");
+//            });
         });
 
 //        ngramsCount.foreachRDD((rdd) -> {

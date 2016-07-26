@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class MyKafkaSpout extends KafkaSpout {
     private int counter = 0;
     private int currentSecond = 0;
-    private final int tuplesPerSecond = 100;
+    private final int tuplesPerSecond = 6000;
 
     public MyKafkaSpout(SpoutConfig spoutConf) {
         super(spoutConf);

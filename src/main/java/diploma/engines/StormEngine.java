@@ -69,18 +69,18 @@ public class StormEngine extends AbstractEngine {
 //                        new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS))
 //                , 2).shuffleGrouping("ngram-detection-bolt");
 
-        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-                .withWindow(
-                        new BaseWindowedBolt.Count(20),
-                        new BaseWindowedBolt.Count(20))
-                , 2).shuffleGrouping("ngram-detection-bolt");
+//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+//                .withWindow(
+//                        new BaseWindowedBolt.Count(20),
+//                        new BaseWindowedBolt.Count(20))
+//                , 2).shuffleGrouping("ngram-detection-bolt");
 
 
         // TODO: сделать нормальное создание цепочки обработчиков
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
-        conf.registerMetricsConsumer(MyMetricConsumer.class);
+//        conf.registerMetricsConsumer(MyMetricConsumer.class);
         //conf.setMaxSpoutPending(15);
         //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
 

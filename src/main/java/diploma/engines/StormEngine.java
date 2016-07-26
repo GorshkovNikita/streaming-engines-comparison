@@ -38,9 +38,9 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 2);
+        topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
@@ -80,6 +80,7 @@ public class StormEngine extends AbstractEngine {
         //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
+        conf.registerMetricsConsumer(MyMetricConsumer.class);
         //conf.setMaxSpoutPending(15);
         //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);
 

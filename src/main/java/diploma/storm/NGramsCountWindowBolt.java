@@ -18,7 +18,6 @@ import java.util.Map;
  * Created by Никита on 31.05.2016.
  */
 public class NGramsCountWindowBolt extends BaseWindowedBolt {
-    private int counter = 0;
     private OutputCollector collector;
     private CountMetric countMetric;
     @Override

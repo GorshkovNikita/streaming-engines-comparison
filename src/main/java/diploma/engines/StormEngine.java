@@ -12,6 +12,8 @@ import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Никита on 03.04.2016.
  */
@@ -63,11 +65,11 @@ public class StormEngine extends AbstractEngine {
 //                .shuffleGrouping("spout");
 
         //----------------------------------------------------------------------------------------
-//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-//                .withWindow(
-//                        new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS),
-//                        new BaseWindowedBolt.Duration(2, TimeUnit.SECONDS))
-//                , 2).shuffleGrouping("ngram-detection-bolt");
+        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+                .withWindow(
+                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS),
+                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS))
+                , 2).shuffleGrouping("ngram-detection-bolt");
 
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
 //                .withWindow(

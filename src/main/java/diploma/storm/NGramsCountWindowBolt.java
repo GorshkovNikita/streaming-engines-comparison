@@ -1,5 +1,6 @@
 package diploma.storm;
 
+import diploma.Utilities;
 import org.apache.storm.metric.api.CountMetric;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -19,17 +20,18 @@ import java.util.Map;
  */
 public class NGramsCountWindowBolt extends BaseWindowedBolt {
     private OutputCollector collector;
-    private CountMetric countMetric;
+//    private CountMetric countMetric;
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-        countMetric = new CountMetric();
+//        countMetric = new CountMetric();
         this.collector = collector;
-        context.registerMetric("count-of-windows", countMetric, 60);
+//        context.registerMetric("count-of-windows", countMetric, 60);
     }
 
     @Override
     public void execute(TupleWindow inputWindow) {
-        countMetric.incr();
+        System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
+        //countMetric.incr();
         Map<String, Integer> ngrams = new HashMap<>();
         for (Tuple tuple : inputWindow.get()) {
             String ngram = tuple.getStringByField("ngram");
@@ -37,6 +39,10 @@ public class NGramsCountWindowBolt extends BaseWindowedBolt {
                 ngrams.put(ngram, ngrams.get(ngram) + 1);
             else
                 ngrams.put(ngram, 1);
+        }
+        List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(ngrams);
+        for (int i = 0; i < 50; i++) {
+            System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
         }
         //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
         //for (Map.Entry<String, Integer> ngram : ngrams.entrySet())

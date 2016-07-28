@@ -105,27 +105,27 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
-//        ngrams.foreachRDD((rdd) -> {
+        ngrams.foreachRDD((rdd) -> {
 //            rdd.foreach((ngram) -> {
 //
 //            });
-//        });
+        });
 
         //------------------------------------------------------------------------------------------------------
 
-        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
-
-        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
-                (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
-
-        reducedMapNgrams.foreachRDD((windowrdd) -> {
-            Map<String, Integer> map = windowrdd.collectAsMap();
-            List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
-            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
-            for (int i = 0; i < 50; i++) {
-                LOG.info(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
-            }
-        });
+//        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+//
+//        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
+//                (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
+//
+//        reducedMapNgrams.foreachRDD((windowrdd) -> {
+//            Map<String, Integer> map = windowrdd.collectAsMap();
+//            List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
+//            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
+//            for (int i = 0; i < 50; i++) {
+//                LOG.info(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
+//            }
+//        });
 
         //------------------------------------------------------------------------------------------------------
 

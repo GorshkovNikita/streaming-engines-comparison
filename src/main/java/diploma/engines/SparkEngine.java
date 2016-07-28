@@ -105,55 +105,29 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
-        //JavaDStream<Status> partitionedFilteredStatuses = filteredStatuses.repartition(2);
-
-        // Обрабатываем каждую RDD из потока
-        // processor::process equivalent to (status) -> processor.process(status)
-//        filteredStatuses.foreachRDD((rdd) -> {
-//            LOG.info("Количество объектов в RDD-шке = " + rdd.count());
-//            rdd.foreach(processor::process);
+//        ngrams.foreachRDD((rdd) -> {
+//            rdd.foreach((ngram) -> {
+//
+//            });
 //        });
+
+        //------------------------------------------------------------------------------------------------------
 
         JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
                 (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
 
-//        JavaPairDStream<String, Integer> reducedAndSortedMapNgrams = reducedMapNgrams.transformToPair((rdd) -> {
-//            JavaPairRDD<Integer, String> swaped = rdd.mapToPair(item -> item.swap());
-//            JavaPairRDD<Integer, String> swapedAndSorted = swaped.sortByKey();
-//            rdd = swapedAndSorted.mapToPair(item -> item.swap());
-//            return rdd;
-//        });
-
-        //JavaDStream<Long> windowCount = reducedMapNgrams.count();
-//        JavaDStream<Long> ngramsCount = ngrams.count();
-
-//        count.foreachRDD((rdd) -> {
-//            rdd.foreach((num) -> {
-//                System.out.println(num);
-//            });
-//        });
-
         reducedMapNgrams.foreachRDD((windowrdd) -> {
-            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
             Map<String, Integer> map = windowrdd.collectAsMap();
             List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
+            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
             for (int i = 0; i < 50; i++) {
                 LOG.info(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
             }
-//            windowrdd.foreach((window) -> {
-//                if (window._2() >= 50)
-//                    System.out.println(window._1() + " " + window._2() + " раз");
-//            });
         });
 
-//        ngramsCount.foreachRDD((rdd) -> {
-//            rdd.foreach((ngram) -> {
-//                System.out.println(ngram);
-//                //System.out.println(ngram._1() + " " + ngram._2() + " раз.");
-//            });
-//        });
+        //------------------------------------------------------------------------------------------------------
 
         ssc.start();
         ssc.awaitTermination();

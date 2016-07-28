@@ -20,34 +20,28 @@ import java.util.Map;
  */
 public class NGramsCountWindowBolt extends BaseWindowedBolt {
     private OutputCollector collector;
-//    private CountMetric countMetric;
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-//        countMetric = new CountMetric();
         this.collector = collector;
-//        context.registerMetric("count-of-windows", countMetric, 60);
     }
 
     @Override
     public void execute(TupleWindow inputWindow) {
-        System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
-        //countMetric.incr();
         Map<String, Integer> ngrams = new HashMap<>();
         for (Tuple tuple : inputWindow.get()) {
             String ngram = tuple.getStringByField("ngram");
-            if (ngrams.containsKey(ngram))
+            if (ngrams.containsKey(ngram)) {
                 ngrams.put(ngram, ngrams.get(ngram) + 1);
-            else
+            }
+            else {
                 ngrams.put(ngram, 1);
+            }
         }
         List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(ngrams);
+        System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
         for (int i = 0; i < 50; i++) {
             System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
         }
-        //System.out.println("----------------------------НОВОЕ ОКНО-----------------------------------");
-        //for (Map.Entry<String, Integer> ngram : ngrams.entrySet())
-            //System.out.println(ngram.getKey() + " = " + ngram.getValue());
-            //collector.emit(new ArrayList<Object>() {{ add(ngram.getKey()); add(ngram.getValue()); }});
     }
 
     @Override

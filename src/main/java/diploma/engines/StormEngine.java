@@ -53,33 +53,16 @@ public class StormEngine extends AbstractEngine {
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
                 .shuffleGrouping("bolt");
 
-        // Bolt вывода N-gram
-//        topologyBuilder.setBolt("ngram-printer-bolt", new NGramPrinterBolt(new PrinterStringProcessor()), 2)
-//                .shuffleGrouping("ngram-detection-bolt");
+        //----------------------------------------------------------------------------------------
+
+        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+                .withWindow(
+                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS),
+                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS))
+                , 2).shuffleGrouping("ngram-detection-bolt");
 
         //----------------------------------------------------------------------------------------
 
-        // Тестовая топология для контроля скорости
-//        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
-//        topologyBuilder.setBolt("printer-bolt", new PrinterBolt(new PrinterStringProcessor()), 2)
-//                .shuffleGrouping("spout");
-
-        //----------------------------------------------------------------------------------------
-//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-//                .withWindow(
-//                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS),
-//                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS))
-//                , 2).shuffleGrouping("ngram-detection-bolt");
-
-//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-//                .withWindow(
-//                        new BaseWindowedBolt.Count(20),
-//                        new BaseWindowedBolt.Count(20))
-//                , 2).shuffleGrouping("ngram-detection-bolt");
-
-
-        // TODO: сделать нормальное создание цепочки обработчиков
-        //topologyBuilder.setBolt("bolt2", new StormBolt(new CharCountProcessor())).shuffleGrouping("bolt");
         Config conf = new Config();
         conf.setDebug(false);
 //        conf.registerMetricsConsumer(MyMetricConsumer.class);

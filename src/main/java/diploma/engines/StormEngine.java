@@ -40,7 +40,7 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
+        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
@@ -65,11 +65,11 @@ public class StormEngine extends AbstractEngine {
 //                .shuffleGrouping("spout");
 
         //----------------------------------------------------------------------------------------
-        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
-                .withWindow(
-                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS),
-                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS))
-                , 2).shuffleGrouping("ngram-detection-bolt");
+//        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
+//                .withWindow(
+//                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS),
+//                        new BaseWindowedBolt.Duration(20, TimeUnit.SECONDS))
+//                , 2).shuffleGrouping("ngram-detection-bolt");
 
 //        topologyBuilder.setBolt("window-bolt", new NGramsCountWindowBolt()
 //                .withWindow(

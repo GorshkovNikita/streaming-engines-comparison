@@ -46,12 +46,12 @@ public class StormEngine extends AbstractEngine {
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
-                .shuffleGrouping("spout");
+//        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
+//                .shuffleGrouping("spout");
 
         // Bolt определения N-gram
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
-                .shuffleGrouping("bolt");
+                .shuffleGrouping("spout");
 
         //----------------------------------------------------------------------------------------
 

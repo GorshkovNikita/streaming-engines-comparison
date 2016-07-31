@@ -86,23 +86,26 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 
 //        JavaDStream<String> customReceiverStream = ssc.receiverStream(new CustomReceiver(StorageLevel.MEMORY_ONLY()));
 
-        // Распараллеливаем наши RDD на 4 потока
+        // Распараллеливаем наши RDD на 2 потока
         JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
 
         // Получаем статусы из сообщений
-        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
-            try {
-                return TwitterObjectFactory.createStatus(status._2());
-            } catch (TwitterException ex) {
-                return null;
-            }
-        });
+//        JavaDStream<Status> statuses = partitionedMessages.map((status) -> {
+//            try {
+//                return TwitterObjectFactory.createStatus(status._2());
+//            } catch (TwitterException ex) {
+//                return null;
+//            }
+//        });
+
+        // фильтруем, забирая только сам твит, без id из Kafka
+        JavaDStream<String> statuses = partitionedMessages.map((status) -> status._2());
 
         // Фильтруем статусы, убирая null-объекты
-        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
+        //JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
 
-        JavaDStream<String> ngrams = filteredStatuses.flatMap(
-                (status) -> nGramsProcessor.process(status.getText())
+        JavaDStream<String> ngrams = statuses.flatMap(
+                (status) -> nGramsProcessor.process(status)
         );
 
         ngrams.foreachRDD((rdd) -> {

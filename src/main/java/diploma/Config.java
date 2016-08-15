@@ -12,6 +12,7 @@ public class Config {
     public static final String KAFKA_BROKER_LIST;
     public static final String KAFKA_BROKER_PORT;
     public static final String KAFKA_TOPIC;
+    public static final String RATE;
 
     static {
         String zookeeperId;
@@ -19,6 +20,7 @@ public class Config {
         String kafkaBrokerList;
         String kafkaTopic;
         String kafkaBrokerPort;
+        String rate;
         try {
             InputStream in = Config.class.getResourceAsStream("/network-settings.properties");
             Properties prop = new Properties();
@@ -28,12 +30,14 @@ public class Config {
             kafkaBrokerList = prop.getProperty("kafka.broker.list");
             kafkaBrokerPort = prop.getProperty("kafka.broker.port");
             kafkaTopic = prop.getProperty("kafka.topic");
+            rate = prop.getProperty("rate");
         } catch (Exception e) {
             zookeeperId = "";
             zookeeperPort = "";
             kafkaBrokerList = "";
             kafkaTopic = "";
             kafkaBrokerPort = "";
+            rate = "";
             e.printStackTrace();
         }
         ZOOKEEPER_IP = zookeeperId;
@@ -41,5 +45,6 @@ public class Config {
         KAFKA_BROKER_LIST = kafkaBrokerList;
         KAFKA_TOPIC = kafkaTopic;
         KAFKA_BROKER_PORT = kafkaBrokerPort;
+        RATE = rate;
     }
 }

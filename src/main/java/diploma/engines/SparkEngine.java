@@ -7,6 +7,7 @@ import diploma.processors.Processor;
 import diploma.spark.CustomReceiver;
 import diploma.Utilities;
 import kafka.serializer.StringDecoder;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.spark.*;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.function.Function2;
@@ -99,7 +100,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //        });
 
         // фильтруем, забирая только сам твит, без id из Kafka
-        JavaDStream<String> statuses = partitionedMessages.map((status) -> status._2());
+        JavaDStream<String> statuses = partitionedMessages.map((status) -> StringEscapeUtils.unescapeJava(status._2()));
 
         // Фильтруем статусы, убирая null-объекты
         //JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
@@ -108,7 +109,10 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 (status) -> nGramsProcessor.process(status)
         );
 
+        ngrams.print();
+
         ngrams.foreachRDD((rdd) -> {
+            System.out.println(rdd.count());
 //            rdd.foreach((ngram) -> {
 //
 //            });

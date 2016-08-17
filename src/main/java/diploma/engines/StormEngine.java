@@ -46,8 +46,8 @@ public class StormEngine extends AbstractEngine {
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
-//        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
-//                .shuffleGrouping("spout");
+        topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
+                .shuffleGrouping("spout");
 
         // Bolt определения N-gram
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
@@ -65,7 +65,7 @@ public class StormEngine extends AbstractEngine {
 
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(40000);
+        conf.setMaxSpoutPending(10000);
 //        conf.registerMetricsConsumer(MyMetricConsumer.class);
         //conf.setMaxSpoutPending(15);
         //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);

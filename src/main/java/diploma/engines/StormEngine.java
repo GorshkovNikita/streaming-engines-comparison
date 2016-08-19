@@ -40,7 +40,8 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
+        // используем обертку KafkaSpout для ограничения количества поступающих сообщений
+        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
@@ -51,7 +52,7 @@ public class StormEngine extends AbstractEngine {
 
         // Bolt определения N-gram
         topologyBuilder.setBolt("ngram-detection-bolt", new NGramDetectionBolt(new NGramsProcessor()), 2)
-                .shuffleGrouping("spout");
+                .shuffleGrouping("bolt");
 
         //----------------------------------------------------------------------------------------
 

@@ -1,5 +1,6 @@
 package diploma.storm;
 
+import diploma.Config;
 import org.apache.storm.kafka.*;
 
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class MyKafkaSpout extends KafkaSpout {
     private int counter = 0;
     private int currentSecond = 0;
-    private final int tuplesPerSecond = 6000;
+    private final int tuplesPerSecond = Integer.parseInt(Config.RATE);
 
     public MyKafkaSpout(SpoutConfig spoutConf) {
         super(spoutConf);

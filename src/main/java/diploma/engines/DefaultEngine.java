@@ -34,7 +34,7 @@ public class DefaultEngine extends AbstractEngine {
                     System.out.println(statusesPerSecond);
                     statusesPerSecond = 0;
                 }
-            }, 1000);
+            }, 0, 1000);
         process();
 //        ExecutorService executor = Executors.newSingleThreadExecutor();
 //        Future<String> future = executor.submit(() -> {

@@ -41,7 +41,7 @@ public class StormEngine extends AbstractEngine {
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         // используем обертку KafkaSpout для ограничения количества поступающих сообщений
-        MyKafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
+        KafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
 //        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
@@ -66,7 +66,7 @@ public class StormEngine extends AbstractEngine {
 
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(10000);
+        conf.setMaxSpoutPending(40000);
 //        conf.registerMetricsConsumer(MyMetricConsumer.class);
         //conf.setMaxSpoutPending(15);
         //conf.put(Config.TOPOLOGY_SLEEP_SPOUT_WAIT_STRATEGY_TIME_MS, 1000);

@@ -69,7 +69,7 @@ public class DefaultEngine extends AbstractEngine {
 //                System.out.printf("offset = %d, key = %s, value = %s", record.offset(), record.key(), record.value());
                 Status status = statusFilterProcessor.process(record.value());
                 List<String> ngrams = ngramsProcessor.process(status.getText());
-                System.out.println(ngrams.size());
+//                System.out.println(ngrams.size());
                 statusesPerSecond++;
             }
         }

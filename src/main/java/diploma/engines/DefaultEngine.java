@@ -20,6 +20,7 @@ import java.util.concurrent.*;
  */
 public class DefaultEngine extends AbstractEngine {
     private int statusesPerSecond = 0;
+    private List<String> windowNgrams = new ArrayList<>();
 
     public DefaultEngine(Processor processor) {
         super(processor);
@@ -35,19 +36,36 @@ public class DefaultEngine extends AbstractEngine {
                     statusesPerSecond = 0;
                 }
             }, 0, 1000);
-        process();
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        Future<String> future = executor.submit(() -> {
-//                process();
-//                return "Ready!";
+
+        //----------------------------------------------------------------------------------------
+
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                window(windowNgrams);
 //            }
-//        );
-//        try {
-//            System.out.println(future.get(10000, TimeUnit.MILLISECONDS));
-//        } catch (TimeoutException e) {
-//            future.cancel(true);
-//        }
-//        executor.shutdownNow();
+//        }, 20000, 20000);
+
+        //----------------------------------------------------------------------------------------
+
+        process();
+    }
+
+    public void window(List<String> ngrams) {
+        Map<String, Integer> orderedNgrams = new HashMap<>();
+        for (String ngram : ngrams) {
+            if (orderedNgrams.containsKey(ngram)) {
+                orderedNgrams.put(ngram, orderedNgrams.get(ngram) + 1);
+            }
+            else {
+                orderedNgrams.put(ngram, 1);
+            }
+        }
+        List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(orderedNgrams);
+        System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
+        for (int i = 0; i < 50; i++) {
+            System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
+        }
     }
 
     public void process() throws Exception {
@@ -66,10 +84,13 @@ public class DefaultEngine extends AbstractEngine {
         while (true) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
-//                System.out.printf("offset = %d, key = %s, value = %s", record.offset(), record.key(), record.value());
                 Status status = statusFilterProcessor.process(record.value());
                 List<String> ngrams = ngramsProcessor.process(status.getText());
-//                System.out.println(ngrams.size());
+
+                //----------------------------------------------------------------------------------------
+//                windowNgrams.addAll(ngrams);
+                //----------------------------------------------------------------------------------------
+
                 statusesPerSecond++;
             }
         }

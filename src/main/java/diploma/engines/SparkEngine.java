@@ -95,7 +95,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
             }
         });
 
-        JavaDStream<String> ngrams = statuses.flatMap(
+        JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
+
+        JavaDStream<String> ngrams = filteredStatuses.flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 

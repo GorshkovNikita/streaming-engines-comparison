@@ -25,7 +25,6 @@ public class Main {
                 engine = new DefaultEngine(new PrinterStatusProcessor());
                 break;
             case STORM:
-//                engine = new StormEngine(new PrinterStringProcessor());
                 try { numWorkers = Integer.valueOf(args[1]); }
                 catch (NumberFormatException ex) {
                     LOG.info("Неверный формат ввода числа");
@@ -35,10 +34,10 @@ public class Main {
                     LOG.info("Параметр количества воркеров отсутствует");
                     break;
                 }
-                engine = new StormEngine(new PrinterStatusProcessor(), numWorkers);
+                engine = new StormEngine(numWorkers);
                 break;
             case SPARK:
-                engine = new SparkEngine(new PrinterStringProcessor());
+                engine = new SparkEngine();
                 break;
             default:
                 engine = new DefaultEngine(new PrinterStatusProcessor());

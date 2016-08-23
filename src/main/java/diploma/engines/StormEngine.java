@@ -21,9 +21,7 @@ public class StormEngine extends AbstractEngine {
     private static final Logger LOG = LoggerFactory.getLogger(StormEngine.class);
     private int numWorkers;
 
-    // TODO: такой подход не работает при количестве обработчиков больше одного
-    public StormEngine(Processor processor, int numWorkers) {
-        super(processor);
+    public StormEngine(int numWorkers) {
         this.numWorkers = numWorkers;
     }
 
@@ -40,11 +38,9 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.ignoreZkOffsets = true;
         // Указываем десериализатор
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-        // используем обертку KafkaSpout для ограничения количества поступающих сообщений
-        KafkaSpout kafkaSpout = new MyKafkaSpout(spoutConfig);
+        KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
         topologyBuilder.setSpout("spout", kafkaSpout, 1);
-//        topologyBuilder.setSpout("spout", new TwitterQueueRestSpout(), 1);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
         topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)

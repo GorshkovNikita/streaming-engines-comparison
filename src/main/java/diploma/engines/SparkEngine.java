@@ -35,12 +35,9 @@ import java.util.function.Function;
  */
 public class SparkEngine extends AbstractEngine implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(SparkEngine.class);
+
     public SparkEngine() {
         super();
-    }
-
-    public SparkEngine(Processor processor) {
-        super(processor);
     }
 
     @Override
@@ -74,7 +71,6 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         kafkaParams.put("group.id", "spark-consumer");
         // при каждом запуске приложения сообщения из Kafka читать заново
         kafkaParams.put("auto.offset.reset", "smallest");
-//        kafkaParams.put("zookeeper.connect", ":2181");
         // список брокеров Kafka
         kafkaParams.put("metadata.broker.list", Config.KAFKA_BROKER_LIST);
 
@@ -99,22 +95,12 @@ public class SparkEngine extends AbstractEngine implements Serializable {
             }
         });
 
-        // фильтруем, забирая только сам твит, без id из Kafka
-//        JavaDStream<String> statuses = partitionedMessages.map((status) -> StringEscapeUtils.unescapeJava(status._2()));
-
-        // Фильтруем статусы, убирая null-объекты
-        //JavaDStream<Status> filteredStatuses = statuses.filter((status) -> status != null);
-
         JavaDStream<String> ngrams = statuses.flatMap(
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
-//        ngrams.print();
-
         ngrams.foreachRDD((rdd) -> {
-//            System.out.println(rdd.count());
             rdd.foreach((ngram) -> {
-//                System.out.println(ngram);
             });
         });
 

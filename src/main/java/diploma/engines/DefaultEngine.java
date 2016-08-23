@@ -38,7 +38,7 @@ public class DefaultEngine extends AbstractEngine {
             }, 0, 1000);
 
         //----------------------------------------------------------------------------------------
-
+        // Только для задачи с окнами
 //        timer.schedule(new TimerTask() {
 //            @Override
 //            public void run() {
@@ -88,6 +88,7 @@ public class DefaultEngine extends AbstractEngine {
                 List<String> ngrams = ngramsProcessor.process(status.getText());
 
                 //----------------------------------------------------------------------------------------
+                // Только для задачи с окнами
 //                windowNgrams.addAll(ngrams);
                 //----------------------------------------------------------------------------------------
 

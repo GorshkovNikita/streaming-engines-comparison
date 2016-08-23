@@ -6,6 +6,7 @@ import org.apache.storm.*;
 import org.apache.storm.Config;
 import org.apache.storm.generated.StormTopology;
 import org.apache.storm.kafka.*;
+import org.apache.storm.metric.LoggingMetricsConsumer;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
@@ -62,7 +63,8 @@ public class StormEngine extends AbstractEngine {
 
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(10000);
+        conf.setMaxSpoutPending(25000);
+        conf.registerMetricsConsumer(LoggingMetricsConsumer.class);
 
         StormTopology topology = topologyBuilder.createTopology();
 

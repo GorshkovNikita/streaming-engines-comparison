@@ -63,8 +63,8 @@ public class StormEngine extends AbstractEngine {
 
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(25000);
-        conf.registerMetricsConsumer(LoggingMetricsConsumer.class);
+        conf.setMaxSpoutPending(55000);
+//        conf.registerMetricsConsumer(LoggingMetricsConsumer.class);
 
         StormTopology topology = topologyBuilder.createTopology();
 

@@ -59,7 +59,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(20));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // Множество строк, соответствующим темам в Kafka, из которых берутся данные
         Set<String> topics = new HashSet<>();
@@ -115,7 +115,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         //mapNgrams.persist(StorageLevel.MEMORY_AND_DISK());
 
         JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
-                (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
+                (value1, value2) -> value1 + value2, Durations.seconds(5), Durations.seconds(5));
 
         //reducedMapNgrams.persist(StorageLevel.MEMORY_AND_DISK());
 
@@ -131,6 +131,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
             }
         });
+
         //------------------------------------------------------------------------------------------------------
 
         ssc.start();

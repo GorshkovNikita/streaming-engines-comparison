@@ -20,6 +20,8 @@ import java.util.concurrent.*;
  */
 public class DefaultEngine extends AbstractEngine {
     private int statusesPerSecond = 0;
+    private int minute = 0;
+    private int totalStatuses = 0;
     private List<String> windowNgrams = new ArrayList<>();
 
     public DefaultEngine(Processor processor) {
@@ -33,6 +35,7 @@ public class DefaultEngine extends AbstractEngine {
                 @Override
                 public void run() {
                     System.out.println(statusesPerSecond);
+                    totalStatuses += statusesPerSecond;
                     statusesPerSecond = 0;
                 }
             }, 0, 1000);
@@ -47,6 +50,15 @@ public class DefaultEngine extends AbstractEngine {
 //        }, 20000, 20000);
 
         //----------------------------------------------------------------------------------------
+
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                minute++;
+                System.out.println("Average processing speed = " + totalStatuses / (60 * minute));
+            }
+        }, 60000, 60000);
 
         process();
     }
@@ -77,16 +89,18 @@ public class DefaultEngine extends AbstractEngine {
         props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "1000");
         props.put("session.timeout.ms", "30000");
+        props.put("receive.buffer.bytes", "524288");
+        props.put("max.partition.fetch.bytes", "4194304");
+        props.put("auto.offset.reset", "earliest");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList("my-replicated-topic"));
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(100);
+            ConsumerRecords<String, String> records = consumer.poll(0);
             for (ConsumerRecord<String, String> record : records) {
                 Status status = statusFilterProcessor.process(record.value());
                 List<String> ngrams = ngramsProcessor.process(status.getText());
-
                 //----------------------------------------------------------------------------------------
                 // Только для задачи с окнами
 //                windowNgrams.addAll(ngrams);
@@ -97,3 +111,4 @@ public class DefaultEngine extends AbstractEngine {
         }
     }
 }
+

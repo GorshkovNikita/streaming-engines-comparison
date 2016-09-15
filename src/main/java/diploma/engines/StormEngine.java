@@ -41,7 +41,7 @@ public class StormEngine extends AbstractEngine {
         spoutConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
         // Создаем Spout
-        topologyBuilder.setSpout("spout", kafkaSpout, 1);
+        topologyBuilder.setSpout("spout", kafkaSpout, 2);
 
         // Bolt-фильтр, нужен обязательно! Работает точно также, как в Spark
         topologyBuilder.setBolt("bolt", new StatusFilterBolt(new StatusFilterProcessor()), 2)
@@ -63,7 +63,7 @@ public class StormEngine extends AbstractEngine {
 
         Config conf = new Config();
         conf.setDebug(false);
-        conf.setMaxSpoutPending(55000);
+        conf.setMaxSpoutPending(4000);
 //        conf.registerMetricsConsumer(LoggingMetricsConsumer.class);
 
         StormTopology topology = topologyBuilder.createTopology();

@@ -46,7 +46,9 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         // Создаем конфигурацию Spark
         SparkConf conf = new SparkConf()
                 .setAppName("twitter-test")
-                .set("spark.streaming.kafka.maxRatePerPartition", "1000")
+                .set("spark.default.parallelism", "2")
+                //.set("spark.rpc.netty.dispatcher.numThreads","2")
+                //.set("spark.streaming.kafka.maxRatePerPartition", "50")
                 ;
 
         /*
@@ -59,7 +61,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
         */
 
         // Создаем главную точку входа движка Spark Streaming
-        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(20));
+        JavaStreamingContext ssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
         // Множество строк, соответствующим темам в Kafka, из которых берутся данные
         Set<String> topics = new HashSet<>();
@@ -84,7 +86,7 @@ public class SparkEngine extends AbstractEngine implements Serializable {
 //        JavaDStream<String> customReceiverStream = ssc.receiverStream(new CustomReceiver(StorageLevel.MEMORY_ONLY()));
 
         // Распараллеливаем наши RDD на 2 потока
-//        JavaPairDStream<String, String> partitionedMessages = messages.repartition(2);
+//        JavaPairDStream<String, String> partitionedMessages = messages.repartition(3);
 
         // Получаем статусы из сообщений
         JavaDStream<Status> statuses = messages.map((status) -> {
@@ -101,36 +103,33 @@ public class SparkEngine extends AbstractEngine implements Serializable {
                 (status) -> nGramsProcessor.process(status.getText())
         );
 
-//        ngrams.foreachRDD((rdd) -> {
-//            System.out.println("Default parallelism = " + ssc.sparkContext().defaultParallelism());
-//            rdd.foreach((ngram) -> {
+        ngrams.foreachRDD((rdd) -> {
+            rdd.foreach((ngram) -> {
                 //System.out.println(ngram);
-//            });
-//        });
+            });
+        });
 
         //------------------------------------------------------------------------------------------------------
 
-        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
+//        JavaPairDStream<String, Integer> mapNgrams = ngrams.mapToPair((ngram) -> new Tuple2<>(ngram, 1));
 
-        //mapNgrams.persist(StorageLevel.MEMORY_AND_DISK());
+//        JavaPairDStream<String, Integer> persistedNgrams = mapNgrams.persist(StorageLevel.MEMORY_AND_DISK());
+        
+//        JavaPairDStream<String, Integer> reducedMapNgrams = persistedNgrams.reduceByKeyAndWindow(
+//                (value1, value2) -> value1 + value2, Durations.seconds(4), Durations.seconds(4));
 
-        JavaPairDStream<String, Integer> reducedMapNgrams = mapNgrams.reduceByKeyAndWindow(
-                (value1, value2) -> value1 + value2, Durations.seconds(20), Durations.seconds(20));
-
-        //reducedMapNgrams.persist(StorageLevel.MEMORY_AND_DISK());
-
-        reducedMapNgrams.foreachRDD((windowrdd) -> {
-            Map<String, Integer> map = windowrdd.collectAsMap();
-            List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
-            System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
-            System.out.println("NumPartitions = " + windowrdd.getNumPartitions());
-            System.out.println("StorageLevel = " + windowrdd.getStorageLevel());
+//        reducedMapNgrams.foreachRDD((windowrdd) -> {
+//            Map<String, Integer> map = windowrdd.collectAsMap();
+//            List<Map.Entry<String, Integer>> entries = Utilities.entriesSortedByValues(map);
+//            System.out.println("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
+//            System.out.println("NumPartitions = " + windowrdd.getNumPartitions());
+//            System.out.println("StorageLevel = " + windowrdd.getStorageLevel());
 //            LOG.info("---------------------------------НОВОЕ ОКНО---------------------------------------------------------");
-            for (int i = 0; i < 50; i++) {
+//            for (int i = 0; i < 50; i++) {
 //                LOG.info(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
-                System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
-            }
-        });
+//                System.out.println(entries.get(i).getKey() + " " + entries.get(i).getValue() + " раз");
+//            }
+//        });
         //------------------------------------------------------------------------------------------------------
 
         ssc.start();
